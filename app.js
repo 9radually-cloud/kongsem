@@ -1217,7 +1217,7 @@ function geometryPolygonMeasurements(points) {
   return { lengths, angles };
 }
 
-function geometryPolygonName(points) {
+function geometryPolygonName(points, grade = activeGrade) {
   if (points.length < 3) return '점 더 찍기';
   const { lengths, angles } = geometryPolygonMeasurements(points);
   const near = (value, target, tolerance = 6) => Math.abs(value - target) <= tolerance;
@@ -1227,9 +1227,11 @@ function geometryPolygonName(points) {
   if (points.length === 3) {
     if (hasRightAngle) return '직각삼각형';
     const hasEqualSides = lengths.some((length, index) => lengths.some((other, otherIndex) => otherIndex !== index && near(length, other)));
+    if (grade === 3) return allEqual ? '정삼각형에 가까워요' : '삼각형';
     return allEqual ? '정삼각형에 가까워요' : hasEqualSides ? '이등변삼각형에 가까워요' : '삼각형';
   }
   if (points.length === 4) {
+    if (grade === 3) return allEqual && allRightAngles ? '정사각형에 가까워요' : '사각형';
     const parallel = (a, b) => {
       const cross = a[0] * b[1] - a[1] * b[0];
       return Math.abs(cross) / (Math.hypot(...a) * Math.hypot(...b)) < 0.06;
@@ -1248,7 +1250,12 @@ function geometryPolygonName(points) {
 
 function geometryToolButton(tool) {
   const selected = geometryState.tool === tool;
-  return `<button type="button" class="geometry-tool-button${selected ? ' selected' : ''}" data-geometry-tool="${tool}" aria-pressed="${selected}">${geometryToolLabels[tool]}</button>`;
+  const label = activeGrade === 3 && tool === 'triangles' ? '직각·정삼각형 만들기'
+    : activeGrade === 3 && tool === 'quadrilaterals' ? '정사각형 만들기'
+      : activeGrade === 4 && tool === 'triangles' ? '삼각형 분류하기'
+        : activeGrade === 4 && tool === 'quadrilaterals' ? '사각형 분류하기'
+          : geometryToolLabels[tool];
+  return `<button type="button" class="geometry-tool-button${selected ? ' selected' : ''}" data-geometry-tool="${tool}" aria-pressed="${selected}">${label}</button>`;
 }
 
 function geometryBlockEditor() {
@@ -1264,10 +1271,10 @@ function geometryControlsMarkup() {
       ? '그림판을 눌러 중심을 찍고, 원 위를 한 번 더 눌러 크기를 정해요. 점을 끌어 옮길 수도 있어요.'
       : geometryState.tool === 'angles'
         ? '꼭짓점을 먼저 찍고, 두 변이 뻗어 갈 점을 차례로 찍어요. 점을 끌어 각을 바꿔 보세요.'
-        : geometryState.tool === 'triangles'
-          ? '세 꼭짓점을 차례로 찍어 삼각형을 만들어요. 꼭짓점을 끌면 변의 모양이 바뀌어요.'
-          : geometryState.tool === 'quadrilaterals'
-            ? '네 꼭짓점을 차례로 찍어 사각형을 만들어요. 꼭짓점을 끌어 여러 모양을 만들어 보세요.'
+              : geometryState.tool === 'triangles'
+          ? activeGrade === 3 ? '세 꼭짓점을 차례로 찍어 직각삼각형이나 정삼각형을 만들어 봐요. 점을 움직여 모양을 비교해요.' : '세 꼭짓점을 차례로 찍어 삼각형을 만들어요. 꼭짓점을 끌면 변의 모양이 바뀌어요.'
+            : geometryState.tool === 'quadrilaterals'
+            ? activeGrade === 3 ? '네 꼭짓점을 찍어 정사각형을 만들고, 점을 움직여 네 변과 네 각을 살펴봐요.' : '네 꼭짓점을 차례로 찍어 사각형을 만들어요. 꼭짓점을 끌어 여러 모양을 만들어 보세요.'
             : geometryState.tool === 'polygon'
               ? '그림판을 눌러 꼭짓점을 차례로 찍어요. 점을 더 찍은 뒤 “그리기 마치기”를 눌러요.'
               : geometryState.tool === 'symmetry'
@@ -1310,7 +1317,8 @@ function renderGeometryStage() {
       const a = Math.atan2(points[1][1] - points[0][1], points[1][0] - points[0][0]);
       const b = Math.atan2(points[2][1] - points[0][1], points[2][0] - points[0][0]);
       const degrees = Math.round(Math.abs(Math.atan2(Math.sin(b - a), Math.cos(b - a))) * 180 / Math.PI);
-      readouts.innerHTML = geometryReadouts([['벌어진 정도', `${degrees}°`], ['꼭짓점', '1개'], ['각의 종류', degrees < 90 ? '예각' : degrees === 90 ? '직각' : degrees === 180 ? '평각' : '둔각']]);
+      const angleName = activeGrade === 3 ? degrees === 90 ? '직각이에요' : '직각이 아니에요' : degrees < 90 ? '예각' : degrees === 90 ? '직각' : degrees === 180 ? '평각' : '둔각';
+      readouts.innerHTML = geometryReadouts([['벌어진 정도', `${degrees}°`], ['꼭짓점', '1개'], ['각의 종류', angleName]]);
     } else if (geometryState.tool === 'triangles' || geometryState.tool === 'quadrilaterals' || geometryState.tool === 'polygon' || geometryState.tool === 'symmetry' || geometryState.tool === 'congruence') {
       if (points.length >= 3) {
         const { lengths, angles } = geometryPolygonMeasurements(points);
