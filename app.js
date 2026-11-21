@@ -59,49 +59,52 @@ let curriculumUnitById = Object.fromEntries(curriculumUnits.map((unit) => [unit.
 let learningSkillLabels = Object.fromEntries(curriculumUnits.flatMap((unit) => unit.skills.map((skill) => [skill.id, skill.label])));
 const geometryPlans = {
   3: {
-    unit: '원 · 기초 도형 관찰',
-    description: '원의 중심과 반지름을 살펴보고, 여러 도형의 모양도 직접 바꿔 봐요.',
-    note: '원의 중심·반지름·지름을 살펴봐요. 블록 쌓기는 입체 모양 미리 보기예요.',
+    unit: '선분과 각 · 삼각형 · 사각형 · 원',
+    description: '선분과 반직선을 그려 보고, 각과 여러 가지 평면도형을 만들어 봐요.',
+    note: '선분·반직선·각·직각과 삼각형, 사각형, 원을 살펴봐요.',
     defaultMode: '2d',
-    defaultTool: 'circle',
-    modes: ['2d', '3d'],
-    tools: { '2d': ['polygon', 'circle'], '3d': ['blocks', 'lever'] },
-    preview3d: true,
+    defaultTool: 'lines',
+    modes: ['2d'],
+    tools: { '2d': ['lines', 'angles', 'triangles', 'quadrilaterals', 'circle'] },
   },
   4: {
     unit: '삼각형 · 사각형 · 다각형',
-    description: '삼각형과 사각형의 변·꼭짓점을 바꾸고 다각형을 만들어 봐요.',
-    note: '변과 꼭짓점, 각의 모양을 바꾸어 봐요. 블록 쌓기는 입체 모양 미리 보기예요.',
+    description: '삼각형과 사각형의 성질을 비교하고, 다각형을 직접 만들어 봐요.',
+    note: '삼각형의 변과 각, 사각형의 성질, 다각형의 변과 꼭짓점을 살펴봐요.',
     defaultMode: '2d',
-    defaultTool: 'polygon',
-    modes: ['2d', '3d'],
-    tools: { '2d': ['polygon', 'symmetry', 'circle'], '3d': ['blocks', 'lever'] },
-    preview3d: true,
+    defaultTool: 'triangles',
+    modes: ['2d'],
+    tools: { '2d': ['triangles', 'quadrilaterals', 'polygon'] },
   },
   5: {
     unit: '합동과 대칭 · 직육면체',
-    description: '대칭축을 찾아보고 직육면체의 면과 모서리를 입체로 살펴봐요.',
-    note: '대칭축을 찾아보고 직육면체의 면과 모서리를 입체로 살펴봐요.',
+    description: '도형을 포개어 합동을 확인하고, 대칭축과 직육면체를 살펴봐요.',
+    note: '합동인 도형과 대칭축을 비교하고 직육면체의 면·모서리·꼭짓점을 살펴봐요.',
     defaultMode: '2d',
     defaultTool: 'symmetry',
     modes: ['2d', '3d'],
-    tools: { '2d': ['polygon', 'symmetry'], '3d': ['blocks', 'lever', 'prism'] },
+    tools: { '2d': ['congruence', 'symmetry'], '3d': ['prism'] },
     preview3d: false,
   },
   6: {
     unit: '공간과 입체 · 원의 넓이 · 원기둥·원뿔·구',
     description: '쌓기나무를 여러 방향에서 보고 원의 넓이와 입체도형을 탐구해요.',
-    note: '쌓기나무를 여러 방향에서 보고, 원의 넓이와 입체도형을 탐구해요.',
+    note: '원의 넓이를 어림하고, 쌓기나무와 원기둥·원뿔·구의 모양을 살펴봐요.',
     defaultMode: '2d',
     defaultTool: 'circleArea',
     modes: ['2d', '3d'],
-    tools: { '2d': ['polygon', 'circleArea'], '3d': ['blocks', 'lever', 'solids'] },
+    tools: { '2d': ['circleArea'], '3d': ['blocks', 'solids'] },
     preview3d: false,
   },
 };
 const geometryToolLabels = {
+  lines: '선분과 반직선',
+  angles: '각과 직각',
+  triangles: '삼각형 만들기',
+  quadrilaterals: '사각형 만들기',
   polygon: '다각형 만들기',
   circle: '원과 반지름',
+  congruence: '합동인 도형',
   symmetry: '대칭축 찾기',
   circleArea: '원의 넓이',
   blocks: '쌓기나무',
@@ -122,6 +125,11 @@ const geometryState = {
   solid: 'prism',
   solidNet: false,
   solidTurn: 0,
+  lineKind: 'segment',
+  angleKind: 'right',
+  triangleKind: 'right',
+  quadrilateralKind: 'square',
+  congruenceShape: 'triangle',
 };
 const geometryShapeLabels = { triangle: '정삼각형', square: '정사각형', rectangle: '직사각형', pentagon: '정오각형' };
 const geometrySolidLabels = { prism: '직육면체', cylinder: '원기둥', cone: '원뿔', sphere: '구' };
@@ -959,9 +967,78 @@ function geometryPolygonSvg(count, rotation = 0, showLabels = true) {
 function geometryCircleSvg(radius, showMeasurements = true) {
   const drawingRadius = radius * 10;
   const measurements = showMeasurements
-    ? `<path d="M${160 - drawingRadius} 126H${160 + drawingRadius}" class="geometry-diameter-line"/><path d="M160 126L${160 + drawingRadius} 126" class="geometry-radius-line"/><circle cx="160" cy="126" r="5" class="geometry-center-dot"/><text x="${160 + drawingRadius / 2}" y="117" class="geometry-svg-label">r=${radius}</text><text x="160" y="${135 + drawingRadius}" text-anchor="middle" class="geometry-svg-label">지름 ${radius * 2}</text>`
+    ? `<path d="M${160 - drawingRadius} 126H${160 + drawingRadius}" class="geometry-diameter-line"/><path d="M160 126L${160 + drawingRadius} 126" class="geometry-radius-line"/><circle cx="160" cy="126" r="5" class="geometry-center-dot"/><text x="166" y="145" class="geometry-svg-label">중심</text><text x="${160 + drawingRadius / 2}" y="119" text-anchor="middle" class="geometry-svg-label">${radius}칸</text><text x="160" y="${139 + drawingRadius}" text-anchor="middle" class="geometry-svg-label">가로지르는 길이 ${radius * 2}칸</text>`
     : '<circle cx="160" cy="126" r="5" class="geometry-center-dot"/>';
-  return `<svg class="geometry-svg" viewBox="0 0 320 252" role="img" aria-label="반지름 ${radius}, 지름 ${radius * 2}인 원"><circle cx="160" cy="126" r="${drawingRadius}" fill="#f6e9c8" stroke="#536b99" stroke-width="4"/>${measurements}</svg>`;
+  return `<svg class="geometry-svg" viewBox="0 0 320 252" role="img" aria-label="원의 중심에서 원까지 ${radius}칸, 원을 가로지르는 길이 ${radius * 2}칸인 그림"><circle cx="160" cy="126" r="${drawingRadius}" fill="#f6e9c8" stroke="#536b99" stroke-width="4"/>${measurements}</svg>`;
+}
+
+function geometryLinesSvg(kind) {
+  const line = kind === 'line';
+  const ray = kind === 'ray';
+  const start = line ? 42 : 78;
+  const end = line ? 278 : 242;
+  const leftArrow = line ? '<path d="M52 119L42 126L52 133" class="geometry-arrow"/>' : '';
+  const rightArrow = line || ray ? '<path d="M268 119L278 126L268 133" class="geometry-arrow"/>' : '';
+  const endpoints = line ? '' : `<circle cx="78" cy="126" r="6" class="geometry-vertex-dot"/><text x="78" y="158" text-anchor="middle" class="geometry-svg-label">시작점</text>${ray ? '' : '<circle cx="242" cy="126" r="6" class="geometry-vertex-dot"/><text x="242" y="158" text-anchor="middle" class="geometry-svg-label">끝점</text>'}`;
+  const label = line ? '직선' : ray ? '반직선' : '선분';
+  return `<svg class="geometry-svg" viewBox="0 0 320 252" role="img" aria-label="${label} 그림"><path d="M${start} 126H${end}" class="geometry-shape-line"/>${leftArrow}${rightArrow}${endpoints}</svg>`;
+}
+
+function geometryAngleSvg(kind) {
+  const angle = { acute: 45, right: 90, obtuse: 135, straight: 180 }[kind];
+  const point = (degrees, radius) => ({ x: 160 + Math.cos(-degrees * Math.PI / 180) * radius, y: 184 + Math.sin(-degrees * Math.PI / 180) * radius });
+  const first = point(0, 105);
+  const second = point(angle, 105);
+  const arcStart = point(0, 35);
+  const arcEnd = point(angle, 35);
+  const arc = angle === 180 ? `M${arcStart.x} ${arcStart.y}A35 35 0 0 0 ${arcEnd.x} ${arcEnd.y}` : `M${arcStart.x} ${arcStart.y}A35 35 0 0 0 ${arcEnd.x} ${arcEnd.y}`;
+  const rightMarker = kind === 'right' ? '<path d="M160 166H178V184" class="geometry-right-angle-mark"/>' : '';
+  const label = { acute: '예각', right: '직각', obtuse: '둔각', straight: '평각' }[kind];
+  return `<svg class="geometry-svg" viewBox="0 0 320 252" role="img" aria-label="${label}을 이루는 두 변"><path d="M160 184L${first.x} ${first.y}M160 184L${second.x} ${second.y}" class="geometry-shape-line"/><path d="${arc}" class="geometry-angle-arc"/>${rightMarker}<circle cx="160" cy="184" r="5" class="geometry-vertex-dot"/><text x="160" y="226" text-anchor="middle" class="geometry-svg-label">꼭짓점</text></svg>`;
+}
+
+function geometryTriangleSvg(kind) {
+  const specs = {
+    right: { points: [[76, 198], [244, 198], [76, 54]], marks: '<path d="M76 178H96V198" class="geometry-right-angle-mark"/>', label: '직각삼각형', equal: '한 각이 직각' },
+    equilateral: { points: [[160, 50], [76, 198], [244, 198]], marks: '<path d="M113 124L124 130M196 130L207 124M160 189V207" class="geometry-side-mark"/>', label: '정삼각형', equal: '세 변의 길이가 같아요' },
+    isosceles: { points: [[160, 50], [76, 198], [244, 198]], marks: '<path d="M111 125L122 131M198 131L209 125" class="geometry-side-mark"/>', label: '이등변삼각형', equal: '두 변의 길이가 같아요' },
+  }[kind];
+  const pointString = specs.points.map(([x, y]) => `${x},${y}`).join(' ');
+  return `<svg class="geometry-svg" viewBox="0 0 320 252" role="img" aria-label="${specs.label}, ${specs.equal}"><polygon points="${pointString}" fill="#e6efd9" stroke="#536b99" stroke-width="4" stroke-linejoin="round"/>${specs.marks}${specs.points.map(([x, y]) => `<circle cx="${x}" cy="${y}" r="4" class="geometry-vertex-dot"/>`).join('')}</svg>`;
+}
+
+function geometryQuadrilateralSvg(kind) {
+  const specs = {
+    square: { points: [[82, 48], [238, 48], [238, 204], [82, 204]], label: '정사각형', facts: [['변', '4개'], ['같은 길이', '네 변'], ['각', '모두 직각']] },
+    rectangle: { points: [[56, 72], [264, 72], [264, 180], [56, 180]], label: '직사각형', facts: [['변', '4개'], ['같은 길이', '마주 보는 변'], ['각', '모두 직각']] },
+    parallelogram: { points: [[100, 56], [264, 56], [220, 196], [56, 196]], label: '평행사변형', facts: [['변', '4개'], ['평행한 변', '두 쌍'], ['마주 보는 변', '길이가 같아요']] },
+    trapezoid: { points: [[104, 58], [216, 58], [264, 198], [56, 198]], label: '사다리꼴', facts: [['변', '4개'], ['평행한 변', '한 쌍'], ['꼭짓점', '4개']] },
+    rhombus: { points: [[160, 45], [258, 126], [160, 207], [62, 126]], label: '마름모', facts: [['변', '4개'], ['같은 길이', '네 변'], ['꼭짓점', '4개']] },
+  }[kind];
+  const points = specs.points.map(([x, y]) => `${x},${y}`).join(' ');
+  const rightMarks = kind === 'square'
+    ? '<path d="M82 66H100V48M220 48V66H238M238 186H220V204M100 204V186H82" class="geometry-right-angle-mark"/>'
+    : kind === 'rectangle'
+      ? '<path d="M56 90H74V72M246 72V90H264M264 162H246V180M74 180V162H56" class="geometry-right-angle-mark"/>'
+      : '';
+  const sideMarks = {
+    square: '<path d="M155 48V58M238 126H228M155 204V194M82 126H92" class="geometry-side-mark"/>',
+    rectangle: '<path d="M151 72V82M151 180V170" class="geometry-side-mark"/>',
+    parallelogram: '<path d="M175 56V68M145 184V196M91 92L101 95M219 157L229 160" class="geometry-side-mark"/>',
+    trapezoid: '<path d="M155 58V70M155 186V198" class="geometry-parallel-mark"/>',
+    rhombus: '<path d="M155 82L165 94M204 121L214 131M155 158L165 170M106 121L116 131" class="geometry-side-mark"/>',
+  }[kind];
+  return `<svg class="geometry-svg" viewBox="0 0 320 252" role="img" aria-label="${specs.label}"><polygon points="${points}" fill="#e6efd9" stroke="#536b99" stroke-width="4" stroke-linejoin="round"/>${rightMarks}${sideMarks}${specs.points.map(([x, y]) => `<circle cx="${x}" cy="${y}" r="4" class="geometry-vertex-dot"/>`).join('')}</svg>`;
+}
+
+function geometryCongruenceSvg(shape) {
+  const shapes = {
+    triangle: '<polygon points="0,-55 -48,35 48,35"/>',
+    square: '<rect x="-42" y="-42" width="84" height="84"/>',
+    rectangle: '<rect x="-58" y="-34" width="116" height="68"/>',
+  };
+  const content = shapes[shape];
+  return `<svg class="geometry-svg" viewBox="0 0 320 252" role="img" aria-label="같은 모양과 크기의 도형 두 개를 포개어 합동 확인"><g transform="translate(105 126)"><g class="geometry-congruence-first">${content}</g></g><g transform="translate(218 126) rotate(35)"><g class="geometry-congruence-second">${content}</g></g><text x="105" y="224" text-anchor="middle" class="geometry-svg-label">도형 1</text><text x="218" y="224" text-anchor="middle" class="geometry-svg-label">도형 2</text></svg>`;
 }
 
 function geometrySymmetrySvg(shape, showAxes) {
@@ -1067,10 +1144,15 @@ function geometryBlockEditor() {
 
 function geometryControlsMarkup() {
   if (geometryState.mode === '2d') {
+    if (geometryState.tool === 'lines') return `<label class="geometry-control"><span>어떤 선을 그려 볼까요?</span><select data-geometry-input="lineKind" aria-label="그려 볼 선 고르기"><option value="segment" ${geometryState.lineKind === 'segment' ? 'selected' : ''}>선분 · 양쪽 끝이 있어요</option><option value="ray" ${geometryState.lineKind === 'ray' ? 'selected' : ''}>반직선 · 한쪽으로 계속 이어져요</option><option value="line" ${geometryState.lineKind === 'line' ? 'selected' : ''}>직선 · 양쪽으로 계속 이어져요</option></select></label><p class="geometry-control-hint">끝점의 수와 화살표 방향을 비교해 봐요.</p>`;
+    if (geometryState.tool === 'angles') return `<label class="geometry-control"><span>어떤 각을 만들어 볼까요?</span><select data-geometry-input="angleKind" aria-label="만들 각 고르기"><option value="acute" ${geometryState.angleKind === 'acute' ? 'selected' : ''}>직각보다 작은 각 · 예각</option><option value="right" ${geometryState.angleKind === 'right' ? 'selected' : ''}>직각</option><option value="obtuse" ${geometryState.angleKind === 'obtuse' ? 'selected' : ''}>직각보다 큰 각 · 둔각</option><option value="straight" ${geometryState.angleKind === 'straight' ? 'selected' : ''}>곧게 편 각 · 평각</option></select></label><p class="geometry-control-hint">두 변이 만나는 점은 꼭짓점이에요. 네모 표시는 직각을 나타내요.</p>`;
+    if (geometryState.tool === 'triangles') return `<label class="geometry-control"><span>만들 삼각형 고르기</span><select data-geometry-input="triangleKind" aria-label="만들 삼각형 고르기"><option value="right" ${geometryState.triangleKind === 'right' ? 'selected' : ''}>직각삼각형</option><option value="equilateral" ${geometryState.triangleKind === 'equilateral' ? 'selected' : ''}>정삼각형</option><option value="isosceles" ${geometryState.triangleKind === 'isosceles' ? 'selected' : ''}>이등변삼각형</option></select></label><p class="geometry-control-hint">작은 선 표시는 길이가 같은 변, 네모 표시는 직각을 알려줘요.</p>`;
+    if (geometryState.tool === 'quadrilaterals') return `<label class="geometry-control"><span>만들 사각형 고르기</span><select data-geometry-input="quadrilateralKind" aria-label="만들 사각형 고르기"><option value="square" ${geometryState.quadrilateralKind === 'square' ? 'selected' : ''}>정사각형</option><option value="rectangle" ${geometryState.quadrilateralKind === 'rectangle' ? 'selected' : ''}>직사각형</option><option value="parallelogram" ${geometryState.quadrilateralKind === 'parallelogram' ? 'selected' : ''}>평행사변형</option><option value="trapezoid" ${geometryState.quadrilateralKind === 'trapezoid' ? 'selected' : ''}>사다리꼴</option><option value="rhombus" ${geometryState.quadrilateralKind === 'rhombus' ? 'selected' : ''}>마름모</option></select></label><p class="geometry-control-hint">각과 변의 표시를 살펴보며 사각형의 성질을 찾아봐요.</p>`;
+    if (geometryState.tool === 'congruence') return `<label class="geometry-control"><span>포개어 볼 도형</span><select data-geometry-input="congruenceShape" aria-label="합동인지 살펴볼 도형"><option value="triangle" ${geometryState.congruenceShape === 'triangle' ? 'selected' : ''}>삼각형</option><option value="square" ${geometryState.congruenceShape === 'square' ? 'selected' : ''}>정사각형</option><option value="rectangle" ${geometryState.congruenceShape === 'rectangle' ? 'selected' : ''}>직사각형</option></select></label><p class="geometry-control-hint">돌려 놓아도 모양과 크기가 같아 포개지면 합동이에요.</p>`;
     if (geometryState.tool === 'polygon') return `<label class="geometry-control"><span>변과 꼭짓점 수 <strong id="geometry-sides-value">${geometryState.sides}</strong></span><input type="range" min="3" max="8" step="1" value="${geometryState.sides}" data-geometry-input="sides" aria-label="다각형의 변 수"></label><label class="geometry-control"><span>돌려 보기 <strong id="geometry-rotation-value">${geometryState.rotation}°</strong></span><input type="range" min="0" max="330" step="15" value="${geometryState.rotation}" data-geometry-input="rotation" aria-label="다각형을 돌리기"></label><p class="geometry-control-hint">변의 수를 바꿔 여러 다각형을 만들어요.</p>`;
-    if (geometryState.tool === 'circle') return `<label class="geometry-control"><span>반지름 <strong id="geometry-radius-value">${geometryState.radius}</strong></span><input type="range" min="2" max="8" step="1" value="${geometryState.radius}" data-geometry-input="radius" aria-label="원의 반지름"></label><button type="button" class="geometry-secondary-button" data-geometry-action="toggle-measurements">${geometryState.showMeasurements ? '반지름·지름 숨기기' : '반지름·지름 보이기'}</button><p class="geometry-control-hint">반지름은 중심에서 원까지, 지름은 중심을 지나 원을 가로질러요.</p>`;
+    if (geometryState.tool === 'circle') return `<label class="geometry-control"><span>중심에서 원까지 <strong id="geometry-radius-value">${geometryState.radius}칸</strong></span><input type="range" min="2" max="8" step="1" value="${geometryState.radius}" data-geometry-input="radius" aria-label="원의 중심에서 원까지 길이"></label><button type="button" class="geometry-secondary-button" data-geometry-action="toggle-measurements">${geometryState.showMeasurements ? '길이 표시 숨기기' : '길이 표시 보기'}</button><p class="geometry-control-hint">원의 중심에서 원까지의 길이를 바꾸어 원의 크기를 비교해요.</p>`;
     if (geometryState.tool === 'symmetry') return `<label class="geometry-control"><span>도형</span><select data-geometry-input="symmetryShape" aria-label="대칭축을 살펴볼 도형"><option value="triangle" ${geometryState.symmetryShape === 'triangle' ? 'selected' : ''}>정삼각형</option><option value="square" ${geometryState.symmetryShape === 'square' ? 'selected' : ''}>정사각형</option><option value="rectangle" ${geometryState.symmetryShape === 'rectangle' ? 'selected' : ''}>직사각형</option><option value="pentagon" ${geometryState.symmetryShape === 'pentagon' ? 'selected' : ''}>정오각형</option></select></label><button type="button" class="geometry-secondary-button" data-geometry-action="toggle-axes">${geometryState.symmetryAxes ? '대칭축 숨기기' : '대칭축 보이기'}</button><p class="geometry-control-hint">점선을 따라 접었을 때 양쪽이 포개지는지 살펴봐요.</p>`;
-    return `<label class="geometry-control"><span>반지름 <strong id="geometry-radius-value">${geometryState.radius}</strong></span><input type="range" min="1" max="8" step="1" value="${geometryState.radius}" data-geometry-input="radius" aria-label="원의 반지름"></label><p class="geometry-formula">원의 넓이 = 반지름 × 반지름 × 3.14</p><p class="geometry-control-hint">반지름을 바꾸고 넓이가 어떻게 달라지는지 살펴봐요.</p>`;
+    return `<label class="geometry-control"><span>원의 중심에서 원까지 <strong id="geometry-radius-value">${geometryState.radius}칸</strong></span><input type="range" min="1" max="8" step="1" value="${geometryState.radius}" data-geometry-input="radius" aria-label="원의 중심에서 원까지 길이"></label><p class="geometry-formula">원의 넓이 = 반지름 × 반지름 × 3.14</p><p class="geometry-control-hint">중심에서 원까지의 길이를 바꾸고, 넓이가 어떻게 달라지는지 살펴봐요.</p>`;
   }
   if (geometryState.tool === 'blocks') return `<div class="geometry-control"><span>보는 방향</span><div class="geometry-view-buttons" role="group" aria-label="쌓기나무 보는 방향"><button data-geometry-view="iso" aria-pressed="${geometryState.blockView === 'iso'}">입체</button><button data-geometry-view="top" aria-pressed="${geometryState.blockView === 'top'}">위</button><button data-geometry-view="front" aria-pressed="${geometryState.blockView === 'front'}">앞</button><button data-geometry-view="side" aria-pressed="${geometryState.blockView === 'side'}">옆</button></div></div><div class="geometry-control"><span>블록 놓기·빼기 <small>최대 4층</small></span>${geometryBlockEditor()}</div><div class="geometry-preset-buttons"><button data-geometry-preset="stairs">계단</button><button data-geometry-preset="wall">벽</button><button data-geometry-preset="clear">모두 비우기</button></div><div class="geometry-rotate-buttons"><button data-geometry-action="rotate-left">↶ 왼쪽으로 돌리기</button><button data-geometry-action="rotate-right">오른쪽으로 돌리기 ↷</button></div>`;
   const selectMarkup = geometryState.tool === 'prism'
@@ -1088,8 +1170,46 @@ function renderGeometryStage() {
   const caption = document.querySelector('#geometry-stage-caption');
   const readouts = document.querySelector('#geometry-readouts');
   if (!stage || !title || !readouts) return;
-  kind.textContent = geometryState.mode === '2d' ? '2D 평면 실험' : '3D 입체 실험';
-  if (geometryState.mode === '2d' && geometryState.tool === 'polygon') {
+  kind.textContent = geometryState.mode === '2d' ? '평면도형 살펴보기' : '입체도형 살펴보기';
+  if (geometryState.mode === '2d' && geometryState.tool === 'lines') {
+    const lineNames = { segment: '선분', ray: '반직선', line: '직선' };
+    title.textContent = `${lineNames[geometryState.lineKind]} 그리기`;
+    stage.innerHTML = geometryLinesSvg(geometryState.lineKind);
+    readouts.innerHTML = geometryReadouts([['그림', lineNames[geometryState.lineKind]], ['끝점', geometryState.lineKind === 'line' ? '없어요' : geometryState.lineKind === 'ray' ? '한 개' : '두 개'], ['이어지는 쪽', geometryState.lineKind === 'segment' ? '끝점까지' : geometryState.lineKind === 'ray' ? '한쪽' : '양쪽']]);
+    caption.textContent = '선 위 화살표는 끝없이 이어지는 방향을 나타내요.';
+  } else if (geometryState.mode === '2d' && geometryState.tool === 'angles') {
+    const angleNames = { acute: '예각', right: '직각', obtuse: '둔각', straight: '평각' };
+    title.textContent = `${angleNames[geometryState.angleKind]} 만들기`;
+    stage.innerHTML = geometryAngleSvg(geometryState.angleKind);
+    readouts.innerHTML = geometryReadouts([['각의 이름', angleNames[geometryState.angleKind]], ['꼭짓점', '1개'], ['두 변', '한 점에서 만나요']]);
+    caption.textContent = '직각보다 작은 각은 예각, 더 큰 각은 둔각이에요.';
+  } else if (geometryState.mode === '2d' && geometryState.tool === 'triangles') {
+    const labels = { right: '직각삼각형', equilateral: '정삼각형', isosceles: '이등변삼각형' };
+    const descriptions = { right: '직각이 한 개 있어요', equilateral: '세 변의 길이가 같아요', isosceles: '두 변의 길이가 같아요' };
+    title.textContent = labels[geometryState.triangleKind];
+    stage.innerHTML = geometryTriangleSvg(geometryState.triangleKind);
+    readouts.innerHTML = geometryReadouts([['변', '3개'], ['꼭짓점', '3개'], ['살펴볼 점', descriptions[geometryState.triangleKind]]]);
+    caption.textContent = '표시를 살펴보며 변의 길이와 각의 모양을 비교해요.';
+  } else if (geometryState.mode === '2d' && geometryState.tool === 'quadrilaterals') {
+    const facts = {
+      square: [['변', '4개'], ['같은 길이', '네 변'], ['각', '모두 직각']],
+      rectangle: [['변', '4개'], ['같은 길이', '마주 보는 변'], ['각', '모두 직각']],
+      parallelogram: [['변', '4개'], ['평행한 변', '두 쌍'], ['마주 보는 변', '길이가 같아요']],
+      trapezoid: [['변', '4개'], ['평행한 변', '한 쌍'], ['꼭짓점', '4개']],
+      rhombus: [['변', '4개'], ['같은 길이', '네 변'], ['꼭짓점', '4개']],
+    }[geometryState.quadrilateralKind];
+    const names = { square: '정사각형', rectangle: '직사각형', parallelogram: '평행사변형', trapezoid: '사다리꼴', rhombus: '마름모' };
+    title.textContent = `${names[geometryState.quadrilateralKind]} 살펴보기`;
+    stage.innerHTML = geometryQuadrilateralSvg(geometryState.quadrilateralKind);
+    readouts.innerHTML = geometryReadouts(facts);
+    caption.textContent = '변의 길이 표시와 직각 표시를 보며 사각형의 성질을 찾아봐요.';
+  } else if (geometryState.mode === '2d' && geometryState.tool === 'congruence') {
+    const names = { triangle: '삼각형', square: '정사각형', rectangle: '직사각형' };
+    title.textContent = '합동인 도형 포개 보기';
+    stage.innerHTML = geometryCongruenceSvg(geometryState.congruenceShape);
+    readouts.innerHTML = geometryReadouts([['모양', '같아요'], ['크기', '같아요'], ['돌려 보기', '포개져요']]);
+    caption.textContent = '도형을 돌려도 모양과 크기가 같아 포개지면 합동이에요.';
+  } else if (geometryState.mode === '2d' && geometryState.tool === 'polygon') {
     title.textContent = `${geometryState.sides}각형 만들기`;
     stage.innerHTML = geometryPolygonSvg(geometryState.sides, geometryState.rotation);
     readouts.innerHTML = geometryReadouts([['변', `${geometryState.sides}개`], ['꼭짓점', `${geometryState.sides}개`], ['도형', '정다각형']]);
@@ -1097,7 +1217,7 @@ function renderGeometryStage() {
   } else if (geometryState.mode === '2d' && geometryState.tool === 'circle') {
     title.textContent = '원의 중심·반지름·지름';
     stage.innerHTML = geometryCircleSvg(geometryState.radius, geometryState.showMeasurements);
-    readouts.innerHTML = geometryReadouts([['반지름', `${geometryState.radius}칸`], ['지름', `${geometryState.radius * 2}칸`], ['관계', '지름은 2배']]);
+    readouts.innerHTML = geometryReadouts([['중심에서 원까지', `${geometryState.radius}칸`], ['원을 가로지르는 길이', `${geometryState.radius * 2}칸`], ['길이의 관계', '두 배']]);
     caption.textContent = '중심을 지나 원의 양 끝을 잇는 길이는 반지름의 두 배예요.';
   } else if (geometryState.mode === '2d' && geometryState.tool === 'symmetry') {
     const axisCount = { triangle: 3, square: 4, rectangle: 2, pentagon: 5 }[geometryState.symmetryShape];
@@ -1109,7 +1229,7 @@ function renderGeometryStage() {
     const area = (geometryState.radius * geometryState.radius * 3.14).toFixed(2).replace(/\.00$/, '');
     title.textContent = '원의 넓이 실험';
     stage.innerHTML = geometryCircleSvg(geometryState.radius, true);
-    readouts.innerHTML = geometryReadouts([['반지름', `${geometryState.radius}칸`], ['넓이', `${area}칸²`], ['원주율', '3.14']]);
+    readouts.innerHTML = geometryReadouts([['중심에서 원까지', `${geometryState.radius}칸`], ['넓이', `${area}칸²`], ['원주율', '3.14']]);
     caption.textContent = '반지름을 바꾼 뒤 반지름×반지름×3.14의 값도 비교해봐요.';
   } else if (geometryState.tool === 'blocks') {
     const total = geometryState.blocks.flat().reduce((sum, height) => sum + height, 0);
@@ -2324,7 +2444,7 @@ function ratioProportionVisual(data = {}) {
 function circleAreaVisual(data = {}) {
   const radius = Number(data.radius);
   if (!radius) return '<div class="visual-card circle-area-model"><div class="visual-title">원의 넓이 구하기</div><div class="circle-area-rule">반지름 × 반지름 × 3.14</div><p class="visual-caption">지름이 주어지면 먼저 2로 나누어 반지름을 구해요.</p></div>';
-  return `<div class="visual-card circle-area-model"><div class="visual-title">원의 넓이는 반지름으로 계산해요</div><svg class="shape-svg" viewBox="0 0 220 185" role="img" aria-label="반지름이 표시된 원"><circle cx="110" cy="92" r="65" fill="#f1e8ce" stroke="#536a94" stroke-width="4"/><path d="M110 92H175" stroke="#d8875e" stroke-width="4"/><circle cx="110" cy="92" r="5" fill="#354a76"/><text x="142" y="82" text-anchor="middle">r=${radius}</text></svg><div class="circle-area-rule">반지름 × 반지름 × 3.14</div><p class="visual-caption">원의 넓이는 반지름의 제곱에 원주율을 곱해요.</p></div>`;
+  return `<div class="visual-card circle-area-model"><div class="visual-title">원의 넓이는 반지름으로 계산해요</div><svg class="shape-svg" viewBox="0 0 220 185" role="img" aria-label="반지름이 표시된 원"><circle cx="110" cy="92" r="65" fill="#f1e8ce" stroke="#536a94" stroke-width="4"/><path d="M110 92H175" stroke="#d8875e" stroke-width="4"/><circle cx="110" cy="92" r="5" fill="#354a76"/><text x="142" y="82" text-anchor="middle">반지름 ${radius}</text></svg><div class="circle-area-rule">반지름 × 반지름 × 3.14</div><p class="visual-caption">원의 넓이는 반지름의 제곱에 원주율을 곱해요.</p></div>`;
 }
 
 function cylinderConeSphereVisual(data = {}) {
@@ -4974,8 +5094,8 @@ document.querySelector('#geometry-controls').addEventListener('input', (event) =
   if (input.dataset.geometryInput === 'radius') geometryState.radius = Number(value);
   if (input.dataset.geometryInput === 'symmetryShape') geometryState.symmetryShape = value;
   if (input.dataset.geometryInput === 'solid') geometryState.solid = value;
-  const label = input.parentElement.querySelector('strong');
-  if (label) label.textContent = `${value}${input.dataset.geometryInput === 'rotation' ? '°' : ''}`;
+   const label = input.parentElement.querySelector('strong');
+   if (label) label.textContent = input.dataset.geometryInput === 'rotation' ? `${value}°` : `${value}칸`;
   renderGeometryStage();
 });
 document.querySelector('#geometry-controls').addEventListener('change', (event) => {
@@ -4983,6 +5103,11 @@ document.querySelector('#geometry-controls').addEventListener('change', (event) 
   if (!input) return;
   if (input.dataset.geometryInput === 'symmetryShape') geometryState.symmetryShape = input.value;
   if (input.dataset.geometryInput === 'solid') geometryState.solid = input.value;
+  if (input.dataset.geometryInput === 'lineKind') geometryState.lineKind = input.value;
+  if (input.dataset.geometryInput === 'angleKind') geometryState.angleKind = input.value;
+  if (input.dataset.geometryInput === 'triangleKind') geometryState.triangleKind = input.value;
+  if (input.dataset.geometryInput === 'quadrilateralKind') geometryState.quadrilateralKind = input.value;
+  if (input.dataset.geometryInput === 'congruenceShape') geometryState.congruenceShape = input.value;
   renderGeometryLab();
 });
 document.querySelector('#geometry-controls').addEventListener('click', (event) => {

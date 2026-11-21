@@ -1188,6 +1188,13 @@ button:focus-visible, a:focus-visible, textarea:focus-visible { outline-color: v
 .geometry-center-dot { fill: #354a78; }
 .geometry-radius-line { stroke: #d47757; stroke-width: 3; }
 .geometry-diameter-line { stroke: #718b5f; stroke-width: 3; stroke-dasharray: 7 4; }
+.geometry-shape-line { fill: none; stroke: #536b99; stroke-width: 5; stroke-linecap: round; }
+.geometry-arrow { fill: none; stroke: #536b99; stroke-width: 4; stroke-linecap: round; stroke-linejoin: round; }
+.geometry-angle-arc { fill: none; stroke: #d47757; stroke-width: 3; }
+.geometry-right-angle-mark { fill: none; stroke: #d47757; stroke-width: 3; }
+.geometry-side-mark { fill: none; stroke: #718b5f; stroke-width: 4; stroke-linecap: round; }
+.geometry-congruence-first { fill: #dce9ce; stroke: #536b99; stroke-width: 4; stroke-linejoin: round; }
+.geometry-congruence-second { fill: #f2e0b9; stroke: #b44d52; stroke-width: 4; stroke-linejoin: round; }
 .geometry-cube-left { fill: #c4d7b5; stroke: #617c56; stroke-width: 1.5; }
 .geometry-cube-right { fill: #9fb98e; stroke: #617c56; stroke-width: 1.5; }
 .geometry-cube-top { fill: #e8f0de; stroke: #617c56; stroke-width: 1.5; }
