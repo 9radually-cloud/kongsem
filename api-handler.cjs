@@ -44,6 +44,7 @@ const instructionOverridePattern = /비밀번호|api.?key|시스템|프롬프트
 const inappropriatePattern = /씨발|시발|ㅅㅂ|개새끼|개소리|병신|ㅂㅅ|좆|꺼져|미친놈|미친년|찐따|죽어|죽여|자살|성관계|야한|fuck|shit|bitch|asshole|idiot|stupid|porn|weapon|bomb|drug|kill|rape|suicide/i;
 const shortFollowUpPattern = /^(왜|왜요|어떻게|다시|다시 설명|더|좀 더|힌트|맞아|맞아요|네|응|아니|아니요|예|모르겠어|모르겠어요|잘 모르겠어요|어려워요|헷갈려요|이해가 안돼요|그럼 왜|이거 왜)[?!. ]*$/i;
 const generalMathPattern = /수학|계산|더하기|덧셈|빼기|뺄셈|곱하기|곱셈|나누기|나눗셈|분수|분자|분모|소수|도형|삼각형|사각형|다각형|정사각형|직사각형|각도|직각|예각|둔각|원|반지름|지름|넓이|둘레|부피|길이|무게|들이|분|시간|시각|그래프|표|자료|평균|가능성|비율|비례|대칭|합동|평행|수직|자리값|자릿값|수의 범위|반올림|어림|쌓기나무|cm|mm|km|kg|g|mL|L/i;
+const appHelpPattern = /질문\s*(몇\s*개|몇\s*번|횟수|제한|남았|어떻게|방법|예시)|몇\s*개\s*남았|어떻게\s*질문|질문하는\s*법|무엇을\s*물어|뭘\s*물어|무슨\s*질문|도움\s*방식|힌트\s*모드|풀이\s*확인|가르치기\s*모드|그래프\s*제작소.*(사용|어떻게)|도형\s*놀이터.*(사용|어떻게)|콩이.*(어떻게\s*써|사용법)/i;
 
 const unitsByGrade = Object.fromEntries(Object.entries(curriculaByGrade).map(([grade, curriculum]) => [
   grade,
@@ -111,6 +112,7 @@ function classifyMessage(messages, unit, grade = 4) {
   if (inappropriatePattern.test(latest)) return { block: true, flagged: true, category: 'inappropriate' };
   if (instructionOverridePattern.test(latest)) return { block: true, flagged: true, category: 'off_topic_or_override' };
   if (offTopicPattern.test(latest)) return { block: true, flagged: true, category: 'off_topic_or_override' };
+  if (appHelpPattern.test(latest)) return { block: false, flagged: false, category: 'app_help' };
   if (isInUnitScope(latest, unit)) return { block: false, flagged: false, category: 'math' };
   if (isInGradeMathScope(latest, grade)) return { block: false, flagged: false, category: 'grade_math' };
   const recentContext = messages.slice(-7, -1).map((message) => message.content).join(' ');
@@ -118,6 +120,24 @@ function classifyMessage(messages, unit, grade = 4) {
     return { block: false, flagged: false, category: 'math_followup' };
   }
   return { block: true, flagged: false, category: 'off_topic' };
+}
+
+function appHelpReply(question, grade) {
+  if (/몇\s*개|몇\s*번|횟수|남았|제한/.test(question)) {
+    return '개인별 남은 질문 수나 하루 질문 한도는 화면에 표시되지 않아요. 대신 서버는 학생별로 1분에 최대 30개 요청을 받도록 제한되어 있어요. 잠시 제한에 걸리면 1분 정도 기다렸다가 다시 질문해 주세요.';
+  }
+  if (/도형\s*놀이터/.test(question)) {
+    return grade === 3
+      ? '도형 메뉴에서 삼각형이나 사각형을 고른 다음 “직각삼각형 바로 만들기”, “정삼각형 바로 만들기”, “정사각형 바로 만들기”를 누르면 돼요. 큰 꼭짓점을 끌면 도형을 옮기거나 크기를 바꿀 수 있어요.'
+      : '도형 메뉴에서 삼각형이나 사각형을 고르고 “새 도형 그리기”를 누른 뒤, 그림판을 차례로 눌러 꼭짓점을 찍어 보세요. 마지막 점은 되돌릴 수 있고, 큰 꼭짓점을 끌어 모양을 바꿀 수 있어요.';
+  }
+  if (/그래프\s*제작소/.test(question)) {
+    return '그래프 메뉴에서 학년에 맞는 그래프를 고르고 제목과 항목 이름, 수를 입력하면 돼요. 표의 값을 고치면 그래프와 요약이 바로 바뀌고, “항목 더 넣기”로 자료를 추가할 수 있어요.';
+  }
+  if (/도움\s*방식|힌트\s*모드|풀이\s*확인|가르치기\s*모드/.test(question)) {
+    return '콩이에게는 개념 설명, 한 단계 힌트, 풀이 확인, 콩이에게 가르치기 방식으로 도움을 받을 수 있어요. 막혔다면 “힌트만 하나 주세요”, 답을 확인하고 싶다면 내가 푼 과정을 함께 적어 주세요.';
+  }
+  return `궁금한 점을 편하게 문장으로 적으면 돼요. ${grade}학년 수학의 다른 단원도 물어볼 수 있어요. 예를 들면 “왜 분모는 그대로예요?”, “다른 방법으로 풀 수 있어요?”, “내 풀이가 맞는지 확인해 주세요”처럼 질문해 보세요. 질문에 학년이나 문제의 조건, 지금까지 생각한 방법을 함께 쓰면 더 알맞게 도와줄 수 있어요.`;
 }
 
 function sendJson(response, status, value) {
@@ -204,6 +224,12 @@ async function handleChat(request, response) {
   const grade = Number(profile.grade);
   const latestQuestion = messages[messages.length - 1].content;
   const moderation = classifyMessage(messages, unit, grade);
+  if (moderation.category === 'app_help') {
+    const reply = appHelpReply(latestQuestion, grade);
+    const logged = await saveConversation(profile, messages, mode, reply, moderation, body.conversationId, unit.id);
+    sendJson(response, 200, { reply, moderation: { flagged: false, category: 'app_help' }, logged: logged.logged, conversationId: logged.id });
+    return;
+  }
   if (moderation.block) {
     const reply = moderation.category === 'inappropriate'
       ? '그 표현은 교사 확인이 필요한 말로 표시했어요. 콩이는 수학 공부를 돕는 친구예요. 지금 선택한 단원 질문으로 다시 이야기해 볼까요?'
@@ -1547,4 +1573,4 @@ async function handleActivity(request, response) {
   sendJson(response, error ? 500 : 200, error ? { error: '학습 상태를 저장하지 못했어요.' } : { ok: true });
 }
 
-module.exports = { classifyMessage, isInGradeMathScope, handleChat, handleHealth, handleStudentFirstLogin, handleStudentHistoryDelete, handleStudentLearningPath, handleStudentLog, handleStudentMachineLabAccess, handleStudentSkillProgress, handleSupabaseConfig, handleSupabaseLogin, handleSupabaseSetup, handleActivity, handleTeacherClassroomSettings, handleTeacherRoster, handleTeacherRosterBulk };
+module.exports = { appHelpReply, classifyMessage, isInGradeMathScope, handleChat, handleHealth, handleStudentFirstLogin, handleStudentHistoryDelete, handleStudentLearningPath, handleStudentLog, handleStudentMachineLabAccess, handleStudentSkillProgress, handleSupabaseConfig, handleSupabaseLogin, handleSupabaseSetup, handleActivity, handleTeacherClassroomSettings, handleTeacherRoster, handleTeacherRosterBulk };
