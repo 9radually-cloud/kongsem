@@ -1,0 +1,26 @@
+{
+  "fraction_division": [
+    { "title": "3/4 ÷ 3/8은 얼마일까요?", "prompt": "나누는 분수를 뒤집어 곱해요.", "skill": "fraction_divide_fraction", "visual": "fraction-division", "visualData": { "numerator": 3, "denominator": 4, "divisorNumerator": 3, "divisorDenominator": 8 }, "choices": ["2", "1/2", "3/8"], "answer": "2" },
+    { "title": "5/6 ÷ 5는 얼마일까요?", "prompt": "분수에 자연수를 나누어요.", "skill": "fraction_divide_natural", "visual": "fraction-division", "visualData": { "numerator": 5, "denominator": 6, "divisor": 5 }, "choices": ["1/6", "5/30", "1/5"], "answer": "1/6" }
+  ],
+  "decimal_division": [
+    { "title": "6.3 ÷ 0.9는 얼마일까요?", "prompt": "두 수를 10배 해 나누는 수를 자연수로 만들어요.", "skill": "decimal_divide_decimal", "visual": "decimal-division", "visualData": { "dividend": 6.3, "divisor": 0.9 }, "choices": ["7", "0.7", "70"], "answer": "7" },
+    { "title": "8.4 ÷ 4는 얼마일까요?", "prompt": "84개의 0.1을 네 부분으로 나누어요.", "skill": "decimal_divide_natural", "visual": "decimal-division", "visualData": { "dividend": 8.4, "divisor": 4 }, "choices": ["2.1", "21", "0.21"], "answer": "2.1" }
+  ],
+  "space_solids": [
+    { "title": "높이가 [2,1,3]인 세 무더기의 쌓기나무는 모두 몇 개일까요?", "prompt": "각 무더기의 높이를 더해요.", "skill": "space_cube_count", "visual": "space-solids", "visualData": { "stacks": [[2, 1, 3]] }, "choices": ["6개", "5개", "7개"], "answer": "6개" },
+    { "title": "쌓기나무를 바로 위에서 보면 주로 무엇을 알 수 있나요?", "prompt": "높이보다 바닥에 놓인 자리의 모양을 살펴봐요.", "skill": "space_top_view", "visual": "space-solids", "visualData": { "stacks": [[1, 2], [2, 1]] }, "choices": ["바닥 자리의 배열", "각 무더기의 옆면 색", "숨은 나무의 이름"], "answer": "바닥 자리의 배열" }
+  ],
+  "ratio_proportion": [
+    { "title": "5:7과 같은 비는?", "prompt": "두 수에 같은 수를 곱해요.", "skill": "ratio_value", "visual": "ratio-proportion", "visualData": { "left": 5, "right": 7 }, "choices": ["10:14", "10:12", "5:14"], "answer": "10:14" },
+    { "title": "32개를 3:5로 나누면 큰 몫은?", "prompt": "비의 합 8로 전체를 나눈 뒤 5를 곱해요.", "skill": "proportional_sharing", "visual": "ratio-proportion", "visualData": { "left": 3, "right": 5, "total": 32 }, "choices": ["20개", "12개", "4개"], "answer": "20개" }
+  ],
+  "circle_area": [
+    { "title": "반지름 7cm인 원의 넓이는? (원주율 3.14)", "prompt": "7×7×3.14를 계산해요.", "skill": "circle_area_formula", "visual": "circle-area", "visualData": { "radius": 7 }, "choices": ["153.86cm²", "43.96cm²", "307.72cm²"], "answer": "153.86cm²" },
+    { "title": "지름 8cm인 원의 반지름은?", "prompt": "지름을 반으로 나누어요.", "skill": "circle_radius_diameter", "visual": "circle-area", "visualData": { "radius": 4 }, "choices": ["4cm", "8cm", "16cm"], "answer": "4cm" }
+  ],
+  "cylinder_cone_sphere": [
+    { "title": "원기둥의 밑면은 몇 개일까요?", "prompt": "위와 아래 원을 세어요.", "skill": "cylinder_parts", "visual": "cylinder-cone-sphere", "visualData": { "kind": "cylinder" }, "choices": ["2개", "1개", "0개"], "answer": "2개" },
+    { "title": "구에 평평한 면은 몇 개일까요?", "prompt": "구의 겉면을 살펴봐요.", "skill": "cone_sphere_parts", "visual": "cylinder-cone-sphere", "visualData": { "kind": "sphere" }, "choices": ["0개", "1개", "2개"], "answer": "0개" }
+  ]
+}

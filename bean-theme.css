@@ -1,0 +1,148 @@
+:root {
+  --navy: #304b38;
+  --blue: #4f784b;
+  --yellow: #e6d394;
+  --orange: #b44d52;
+  --ink: #2e4032;
+  --soybean-deep: #356441;
+  --soybean-green: #4f784b;
+  --soybean-light: #86a75e;
+  --soybean-pale: #edf3e5;
+  --soybean-soft: #dce8d1;
+  --soybean-line: #c6d7ba;
+  --adzuki: #b44d52;
+  --adzuki-pale: #f8e9e8;
+}
+
+body { color: #2e4032; }
+button:focus-visible, a:focus-visible, textarea:focus-visible { outline-color: var(--adzuki); }
+.eyebrow { color: var(--soybean-deep); }
+
+.role-card { border-color: var(--soybean-deep); }
+.student-role { border-color: var(--soybean-deep); background: var(--soybean-pale); box-shadow: 0 5px 0 #d1dbc3; }
+.student-role:hover { box-shadow: 0 7px 0 #d1dbc3; }
+.teacher-role { border-color: #a34b50; background: var(--adzuki-pale); box-shadow: 0 5px 0 #e8d2ce; }
+.teacher-role:hover { box-shadow: 0 7px 0 #e8d2ce; }
+.student-role .role-icon { color: var(--soybean-deep); }
+.teacher-role .role-icon { color: var(--adzuki); }
+
+.mini-quest { border-color: var(--soybean-deep); background: #f0e8ca; box-shadow: 0 7px 0 #d2c79f; }
+.mini-quest::before, .mini-quest::after { display: none; }
+.quest-kicker { color: #43513a; }
+.quest-time { border-color: var(--soybean-line); background: rgba(255,254,250,.9); color: var(--soybean-deep); }
+.quest-main h2 span { color: var(--adzuki); }
+.quest-main h2 i { color: var(--soybean-green); }
+.quest-main p, .quest-hintline, .quest-footer { color: #4a523c; }
+.quest-choices button { border-color: var(--soybean-deep); box-shadow: 0 5px 0 var(--soybean-deep); }
+.quest-choices button:hover { box-shadow: 0 7px 0 var(--soybean-deep); }
+.quest-choices button:active { box-shadow: 0 2px 0 var(--soybean-deep); }
+.quest-choices button.chosen { background: var(--soybean-pale); }
+.quest-choices button.chosen.is-right { border-color: var(--soybean-deep); background: #d7e8cf; box-shadow: 0 5px 0 var(--soybean-deep); color: #2d5738; }
+.quest-feedback { border-color: #dfc1bd; background: var(--adzuki-pale); color: #703d40; }
+.quest-feedback.is-success { border-color: #8aac7b; background: var(--soybean-pale); color: #31593a; }
+.quest-help-button { border-color: #8ca883; color: var(--soybean-deep); }
+.quest-help-button:hover { background: var(--soybean-pale); }
+.garden-bean { background: var(--soybean-light); }
+.bean-garden-seed.current { border-bottom-color: var(--soybean-green); }
+.bean-garden-seed.grown .garden-bean { background: var(--soybean-deep); }
+.garden-leaf { background: var(--soybean-green); }
+
+.student-tabs { background: #f5f2e7; border-bottom-color: #dce4d5; }
+.student-tab { color: #50614d; }
+.student-tab.active { border-color: var(--soybean-deep); background: #fffefa; color: var(--soybean-deep); }
+.student-tab:hover { background: var(--soybean-pale); }
+.tutor-help[open] > summary { border-color: #91ad81; }
+.help-summary-icon, .summary-arrow { background: var(--soybean-pale); color: var(--soybean-deep); }
+.help-summary-copy strong { color: var(--soybean-deep); }
+.summary-arrow { background: var(--soybean-soft); }
+.unit-banner { border-color: var(--soybean-line); background: var(--soybean-pale); }
+.unit-number { background: var(--soybean-green); color: #fff; }
+.unit-copy small { color: #58734f; }
+
+.together-view .mode-card.selected { border-color: var(--soybean-green); background: var(--soybean-pale); color: var(--soybean-deep); }
+.together-view .mode-card:hover { border-color: #9eb892; }
+.together-view .chat-panel { border-color: var(--soybean-deep); }
+.together-view .chat-topline { border-bottom-color: #dce6d4; }
+.together-view .tutor-avatar { background: var(--soybean-deep); color: #fff; }
+.together-view .tutor-identity strong { color: var(--soybean-deep); }
+.together-view .message-avatar { background: var(--soybean-soft); color: var(--soybean-deep); }
+.together-view .bubble { border-color: #d8e4d0; background: #f1f5eb; color: #35483a; }
+.together-view .user-message .message-avatar { background: var(--adzuki); color: #fff; }
+.together-view .user-message .bubble { border-color: #e6c9c7; background: var(--adzuki-pale); color: #653b3d; }
+.together-view .quick-prompts button { border-color: #d9e3d3; color: #405443; }
+.together-view .quick-prompts button:hover { border-color: #9ab68a; background: var(--soybean-pale); }
+.together-view .quick-prompts button span { color: var(--soybean-green); }
+.together-view .visual-card { border-color: var(--soybean-line); }
+.together-view .visual-card svg [stroke="#536b99"], .together-view .visual-card svg [stroke="#485b8f"], .together-view .visual-card svg [stroke="#536a94"] { stroke: var(--soybean-deep) !important; }
+.together-view .visual-card svg [stroke="#d8875e"] { stroke: var(--adzuki) !important; }
+.together-view .inline-action { border-color: #c6d7bc; background: var(--soybean-pale); color: var(--soybean-deep); }
+.composer:focus-within { border-color: var(--soybean-green); box-shadow: 0 0 0 3px rgba(79,120,75,.14); }
+.send-button { border-color: var(--soybean-deep); background: var(--soybean-green); box-shadow: 0 4px 0 var(--soybean-deep); }
+.send-button:active { box-shadow: 0 2px 0 var(--soybean-deep); }
+.history-count, .history-entry-icon { background: var(--soybean-pale); color: var(--soybean-deep); }
+.notebook-open { border-color: #94b68a; background: #e5f0d9; color: #315a3a; }
+.notebook-open:hover { background: #d8e9c9; }
+
+.battle-card { border-color: var(--soybean-deep); background: #f0f4e9; }
+.battle-level { color: #506248; }
+.battle-level strong { color: var(--soybean-deep); }
+.battle-start, .battle-form button, .battle-again { border-color: var(--soybean-deep); background: var(--soybean-deep); }
+.battle-start:hover, .battle-form button:hover, .battle-again:hover { background: #294c34; }
+.battle-round { border-top-color: #cad8bf; }
+.battle-racers { color: var(--soybean-deep); }
+.versus { color: var(--adzuki); }
+.battle-track { border-color: #9eb493; }
+.battle-track span { background: var(--soybean-green); }
+.battle-feedback.is-loss { color: #95464c; }
+.battle-options button:hover:not(:disabled) { border-color: #91ad81; background: var(--soybean-pale); }
+.battle-options button.is-right { border-color: var(--soybean-deep); background: #e6f0df; color: #31593a; }
+
+.dashboard-heading .sample-badge { background: var(--soybean-pale); color: var(--soybean-deep); }
+.sample-notice { border-left-color: var(--soybean-green); background: #eef3e7; color: #405842; }
+.teacher-stats strong, .teacher-panel h2 { color: var(--soybean-deep); }
+.teacher-filter.active { border-color: var(--soybean-green); background: var(--soybean-pale); color: var(--soybean-deep); }
+.active-student-row small { color: var(--soybean-green); }
+.teacher-level-badge.secure { background: var(--soybean-pale); color: var(--soybean-deep); }
+.teacher-student-skill.support { background: var(--adzuki-pale); }
+.teacher-transcript-messages .transcript-student { background: var(--adzuki-pale); color: #673b3e; }
+.teacher-transcript-messages .transcript-tutor { background: var(--soybean-pale); color: #3d553f; }
+
+.login-form { border-color: var(--soybean-deep); }
+.login-form input:focus, .login-form select:focus { border-color: var(--soybean-green); outline-color: rgba(79,120,75,.18); }
+.login-submit { background: var(--soybean-deep); }
+.login-submit:hover { background: #294c34; }
+.teacher-submit { background: var(--adzuki); }
+.teacher-submit:hover { background: #983e45; }
+.first-login-toggle { background: #f5f6f0; color: var(--soybean-deep); }
+.first-login-toggle:hover { border-color: #9bb58f; background: var(--soybean-pale); }
+
+.notebook-card, .battle-card { border-color: var(--soybean-deep); }
+.notebook-equation button:hover, .notebook-tools button:hover { border-color: #8eaa7c; background: var(--soybean-pale); }
+.paper-wrap { border-color: var(--soybean-line); background: repeating-linear-gradient(to bottom, #fff 0, #fff 43px, #e2eadc 44px, #fff 45px); }
+.history-drawer[open] { border-color: #9cb58f; }
+.fraction-toggle, .fraction-add-button { border-color: var(--soybean-line); background: var(--soybean-pale); color: var(--soybean-deep); }
+.fraction-mode-controls button[aria-pressed="true"] { border-color: var(--soybean-green); background: var(--soybean-pale); color: var(--soybean-deep); }
+.fraction-input-stack input:first-child { border-bottom-color: var(--soybean-green); }
+.fraction-input-stack input:focus-visible, .fraction-whole-field input:focus-visible { outline-color: var(--adzuki); }
+.fraction-bar i.filled { border-color: var(--soybean-green); background: #b6cb9f; }
+.setup-open-button:hover { border-color: var(--soybean-green); background: var(--soybean-pale); }
+.setup-dialog { border-color: var(--soybean-deep); color: var(--soybean-deep); }
+.setup-copy-button { background: var(--soybean-deep); }
+.secondary-copy { background: var(--adzuki); }
+.teacher-unit-skill-row progress { accent-color: var(--soybean-green); }
+
+.geometry-mode-switch { border-color: #d5e0cd; background: var(--soybean-pale); }
+.geometry-mode-switch button[aria-pressed="true"], .geometry-tool-button.selected, .geometry-view-buttons button[aria-pressed="true"] { border-color: var(--soybean-deep); background: var(--soybean-deep); }
+.geometry-svg polygon, .geometry-svg rect, .geometry-svg circle { stroke: var(--soybean-deep); }
+.geometry-control input[type="range"], .machine-board-tools input, .machine-setting-control input { accent-color: var(--soybean-green); }
+.geometry-stage-card, .geometry-control-card { border-color: var(--soybean-line); }
+.geometry-secondary-button { border-color: var(--soybean-line); background: var(--soybean-pale); color: var(--soybean-deep); }
+.machine-palette button[aria-pressed="true"], .machine-run-controls .machine-run-button { border-color: var(--soybean-deep); background: var(--soybean-deep); }
+.machine-share-box button, .machine-camera-reset { border-color: var(--soybean-line); background: var(--soybean-pale); color: var(--soybean-deep); }
+.machine-run-status.won { color: var(--soybean-deep); }
+.machine-unlock-panel { border-color: var(--soybean-line); background: var(--soybean-pale); }
+.machine-unlock-button { border-color: var(--soybean-deep); background: var(--soybean-deep); }
+
+@media (max-width: 650px) {
+  .quest-time { background: rgba(255,254,250,.9); }
+}

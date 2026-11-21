@@ -1,0 +1,22 @@
+{
+  "name": "kongsem-kongsem",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "build": "vite build",
+    "start": "npm run build && node --env-file-if-exists=.env server.js",
+    "dev": "vite --host 0.0.0.0 --port 3000"
+  },
+  "devDependencies": {
+    "pptxgenjs": "^4.0.1",
+    "qrcode": "^1.5.4",
+    "vite": "^8.3.5"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.119.0",
+    "three": "^0.187.0"
+  },
+  "overrides": {
+    "image-size": "2.0.4"
+  }
+}

@@ -1,0 +1,343 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#244c35" />
+    <title>콩셈콩셈 | 교사 소개</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --forest: #244c35;
+        --soy: #4f784b;
+        --leaf: #89a861;
+        --pale: #edf3e5;
+        --cream: #f8f5e9;
+        --paper: #fffefa;
+        --ink: #263d30;
+        --muted: #657469;
+        --line: #d7e1d1;
+        --adzuki: #b44d52;
+        --adzuki-pale: #f8e9e8;
+        --gold: #e3d49e;
+      }
+      * { box-sizing: border-box; }
+      html, body { width: 100%; height: 100%; margin: 0; }
+      body { overflow: hidden; background: #172e22; color: var(--ink); font-family: Inter, "Noto Sans KR", "Malgun Gothic", sans-serif; }
+      button { font: inherit; }
+      .presentation { display: grid; width: 100%; height: 100dvh; grid-template-rows: 1fr auto; }
+      .stage { display: grid; min-height: 0; place-items: center; padding: 20px 28px 10px; }
+      .slide {
+        position: relative;
+        display: none;
+        width: min(calc(100vw - 56px), calc((100dvh - 98px) * 16 / 9), 1440px);
+        aspect-ratio: 16 / 9;
+        overflow: hidden;
+        padding: clamp(28px, 4.2vw, 66px) clamp(30px, 5vw, 78px);
+        border: 1px solid rgba(235, 240, 226, .8);
+        border-radius: 18px;
+        background: var(--paper);
+        box-shadow: 0 22px 70px rgba(0, 0, 0, .28);
+      }
+      .slide.active { display: flex; flex-direction: column; animation: arrive .28s ease-out both; }
+      @keyframes arrive { from { opacity: .45; transform: translateY(6px) scale(.995); } to { opacity: 1; transform: none; } }
+      .slide:focus { outline: 3px solid var(--gold); outline-offset: 3px; }
+      .slide-topline { display: flex; align-items: center; justify-content: space-between; gap: 18px; }
+      .brand { display: inline-flex; align-items: center; gap: 10px; color: var(--forest); font-size: 16px; font-weight: 800; letter-spacing: -.035em; }
+      .brand-mark { display: grid; width: 31px; height: 31px; place-items: center; border-radius: 11px; background: var(--forest); }
+      .brand-mark svg { width: 21px; height: 21px; }
+      .course-tag { padding: 8px 12px; border: 1px solid #cbdabf; border-radius: 999px; background: var(--pale); color: var(--forest); font-size: 14px; font-weight: 700; white-space: nowrap; }
+      .eyebrow { margin: 0 0 12px; color: var(--soy); font-size: 14px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; }
+      h1, h2, h3, p { overflow-wrap: anywhere; }
+      h1 { margin: 0; color: var(--forest); font-size: clamp(44px, 4.7vw, 72px); line-height: 1.08; letter-spacing: -.065em; }
+      h2 { margin: 0; color: var(--forest); font-size: clamp(32px, 2.95vw, 45px); line-height: 1.16; letter-spacing: -.045em; }
+      h3 { margin: 0; color: var(--forest); font-size: clamp(19px, 1.75vw, 26px); letter-spacing: -.03em; }
+      .dek { max-width: 760px; margin: 14px 0 0; color: var(--muted); font-size: clamp(18px, 1.65vw, 24px); line-height: 1.52; }
+      .slide-kicker { display: flex; align-items: center; gap: 8px; color: var(--soy); font-size: 14px; font-weight: 800; letter-spacing: .09em; }
+      .slide-kicker::before { width: 18px; height: 3px; border-radius: 3px; background: var(--adzuki); content: ""; }
+      .slide-footer { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: auto; padding-top: 14px; color: #788579; font-size: 13px; }
+      .slide-footer strong { color: var(--forest); }
+      .content { display: flex; min-height: 0; flex: 1; flex-direction: column; padding-top: clamp(22px, 3vw, 42px); }
+      .bean-decoration { position: absolute; right: 11%; bottom: 16%; width: 160px; height: 125px; opacity: .95; }
+      .bean-decoration .orbit { position: absolute; inset: 14px 0; border: 1px solid #d7e1cf; border-radius: 50%; transform: rotate(-25deg); }
+      .bean-decoration .seed { position: absolute; width: 44px; height: 67px; border-radius: 57% 43% 58% 42%; box-shadow: inset -7px -7px 12px rgba(37, 61, 42, .12), 0 8px 16px rgba(37, 61, 42, .12); }
+      .bean-decoration .seed.green { top: 15px; left: 40px; background: var(--leaf); transform: rotate(-29deg); }
+      .bean-decoration .seed.red { right: 35px; bottom: 12px; width: 39px; height: 58px; background: var(--adzuki); transform: rotate(34deg); }
+      .bean-decoration .seed::after { position: absolute; top: 14px; left: 50%; width: 2px; height: 37px; border-radius: 2px; background: rgba(255, 255, 255, .68); content: ""; transform: rotate(7deg); }
+      .hero-grid { display: grid; min-height: 0; flex: 1; grid-template-columns: 1.24fr .76fr; align-items: center; gap: 20px; }
+      .hero-copy { position: relative; z-index: 1; }
+      .hero-copy h1 em { color: var(--adzuki); font-style: normal; }
+      .hero-meta { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 24px; }
+      .hero-meta span { padding: 8px 11px; border: 1px solid var(--line); border-radius: 9px; background: #fff; color: #58695a; font-size: 14px; }
+      .hero-mark { position: relative; display: grid; min-height: 250px; place-items: center; }
+      .hero-mark::before { position: absolute; width: min(23vw, 310px); aspect-ratio: 1; border: 1px solid #d8e2d0; border-radius: 50%; content: ""; }
+      .hero-mark::after { position: absolute; width: min(19vw, 250px); aspect-ratio: 1; border: 1px solid #ead5cf; border-radius: 44% 56% 57% 43%; content: ""; transform: rotate(32deg); }
+      .hero-number { position: relative; z-index: 1; display: grid; width: 168px; aspect-ratio: 1; place-content: center; border: 1px solid #c7d6bc; border-radius: 38px; background: #f1f5e9; box-shadow: 0 17px 38px rgba(36, 76, 53, .12); text-align: center; transform: rotate(-5deg); }
+      .hero-number strong { color: var(--forest); font-size: 58px; line-height: .95; letter-spacing: -.09em; }
+      .hero-number span { margin-top: 9px; color: var(--soy); font-size: 11px; font-weight: 700; letter-spacing: .12em; }
+      .hero-number i { position: absolute; right: -14px; bottom: -11px; display: grid; width: 42px; height: 42px; place-items: center; border: 4px solid var(--paper); border-radius: 50%; background: var(--adzuki); color: white; font-size: 13px; font-style: normal; font-weight: 800; }
+      .cover-ribbon { position: absolute; right: 0; bottom: 0; left: 0; display: flex; align-items: center; justify-content: space-between; padding: 15px 20px; border-radius: 11px; background: var(--forest); color: #fff; }
+      .cover-ribbon strong { font-size: 19px; }
+      .cover-ribbon span { color: #e2eadc; font-size: 14px; }
+      .principles { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 25px; }
+      .principle { min-height: 182px; padding: 20px; border: 1px solid var(--line); border-radius: 13px; background: #fff; }
+      .principle .index { display: inline-grid; width: 34px; height: 34px; place-items: center; border-radius: 9px; background: var(--pale); color: var(--soy); font-size: 14px; font-weight: 800; }
+      .principle:nth-child(2) .index { background: var(--adzuki-pale); color: var(--adzuki); }
+      .principle h3 { margin-top: 17px; }
+      .principle p { margin: 9px 0 0; color: var(--muted); font-size: 16px; line-height: 1.48; }
+      .flow { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin-top: 30px; }
+      .flow-card { position: relative; min-height: 170px; padding: 17px 14px; border: 1px solid var(--line); border-radius: 12px; background: #fff; }
+      .flow-card:not(:last-child)::after { position: absolute; top: 33px; right: -11px; z-index: 1; width: 14px; height: 14px; border-top: 2px solid var(--leaf); border-right: 2px solid var(--leaf); background: var(--paper); content: ""; transform: rotate(45deg); }
+      .flow-card b { display: grid; width: 34px; height: 34px; place-items: center; border-radius: 10px; background: var(--forest); color: #fff; font-size: 14px; }
+      .flow-card:nth-child(3) b { background: var(--adzuki); }
+      .flow-card h3 { margin-top: 15px; font-size: 19px; }
+      .flow-card p { margin: 8px 0 0; color: var(--muted); font-size: 15px; line-height: 1.4; }
+      .callout { display: flex; gap: 11px; align-items: flex-start; margin-top: 13px; padding: 12px 15px; border-left: 3px solid var(--soy); border-radius: 0 10px 10px 0; background: var(--pale); color: #4b604a; font-size: 15px; line-height: 1.43; }
+      .callout.red { border-left-color: var(--adzuki); background: var(--adzuki-pale); color: #714649; }
+      .course-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 11px; margin-top: 21px; }
+      .course-card { display: grid; grid-template-columns: 56px 1fr; gap: 4px 13px; min-height: 118px; padding: 16px; border: 1px solid var(--line); border-radius: 12px; background: #fff; }
+      .course-grade { grid-row: span 2; display: grid; width: 58px; height: 58px; place-items: center; align-self: start; border-radius: 15px; background: var(--pale); color: var(--soy); font-size: 18px; font-weight: 800; }
+      .course-card:nth-child(even) .course-grade { background: var(--adzuki-pale); color: var(--adzuki); }
+      .course-card h3 { font-size: 19px; }
+      .course-card p { margin: 5px 0 0; color: var(--muted); font-size: 14px; line-height: 1.42; }
+      .feature-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 11px; margin-top: 20px; }
+      .feature-card { min-height: 145px; padding: 18px; border: 1px solid var(--line); border-radius: 12px; background: #fff; }
+      .feature-card .label { color: var(--soy); font-size: 13px; font-weight: 800; letter-spacing: .09em; }
+      .feature-card:nth-child(2) .label, .feature-card:nth-child(4) .label { color: var(--adzuki); }
+      .feature-card h3 { margin-top: 11px; }
+      .feature-card p { margin: 7px 0 0; color: var(--muted); font-size: 15px; line-height: 1.42; }
+      .teacher-layout { display: grid; grid-template-columns: .9fr 1.1fr; gap: 14px; margin-top: 20px; }
+      .metric-stack { display: grid; gap: 9px; }
+      .metric { display: grid; grid-template-columns: 54px 1fr auto; gap: 10px; align-items: center; padding: 10px 12px; border: 1px solid var(--line); border-radius: 11px; background: #fff; }
+      .metric .icon { display: grid; width: 44px; height: 44px; place-items: center; border-radius: 13px; background: var(--pale); color: var(--soy); font-size: 14px; font-weight: 800; }
+      .metric:nth-child(2) .icon { background: var(--adzuki-pale); color: var(--adzuki); }
+      .metric strong { display: block; color: var(--forest); font-size: 16px; }
+      .metric small { display: block; margin-top: 3px; color: var(--muted); font-size: 13px; }
+      .metric .arrow { color: var(--soy); font-size: 19px; }
+      .threshold-card { padding: 18px; border-radius: 13px; background: var(--forest); color: #fff; }
+      .threshold-card h3 { color: #fff; }
+      .threshold-card > p { margin: 5px 0 12px; color: #dce8d6; font-size: 13px; line-height: 1.4; }
+      .threshold { display: grid; grid-template-columns: 112px 1fr; gap: 6px 10px; padding: 6px 0; border-top: 1px solid rgba(255,255,255,.15); font-size: 13px; line-height: 1.36; }
+      .threshold strong { color: #f0daa4; }
+      .threshold span { color: #eff3eb; }
+      .guardrails { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 16px; }
+      .guardrail { padding: 14px; border: 1px solid var(--line); border-radius: 11px; background: #fff; }
+      .guardrail b { display: block; margin-bottom: 5px; color: var(--forest); font-size: 15px; }
+      .guardrail p { margin: 0; color: var(--muted); font-size: 13px; line-height: 1.4; }
+      .setup-flow { display: grid; grid-template-columns: repeat(3, 1fr); gap: 11px; margin-top: 17px; }
+      .setup-step { min-height: 136px; padding: 15px; border-radius: 12px; background: #f2f5ec; }
+      .setup-step:nth-child(2) { background: #f8eeee; }
+      .setup-step .num { color: var(--soy); font-size: 14px; font-weight: 800; }
+      .setup-step:nth-child(2) .num { color: var(--adzuki); }
+      .setup-step h3 { margin-top: 10px; font-size: 19px; }
+      .setup-step p { margin: 6px 0 0; color: var(--muted); font-size: 14px; line-height: 1.38; }
+      .demo-agenda { display: grid; gap: 8px; margin-top: 17px; }
+      .demo-row { display: grid; grid-template-columns: 75px 1fr auto; gap: 12px; align-items: center; padding: 10px 13px; border-bottom: 1px solid var(--line); background: rgba(255,255,255,.65); }
+      .demo-row time { color: var(--adzuki); font-size: 14px; font-weight: 800; }
+      .demo-row strong { color: var(--forest); font-size: 16px; }
+      .demo-row span { color: var(--muted); font-size: 13px; }
+      .finish-mark { position: absolute; right: 7%; bottom: 15%; width: 165px; height: 165px; border: 1px solid #dbe4d5; border-radius: 50%; }
+      .finish-mark::before, .finish-mark::after { position: absolute; border: 1px solid #e5cfcb; border-radius: 50%; content: ""; }
+      .finish-mark::before { inset: 17px -9px; transform: rotate(-36deg); }
+      .finish-mark::after { inset: -8px 37px; transform: rotate(25deg); }
+      .finish-copy { position: relative; z-index: 1; display: flex; min-height: 0; flex: 1; flex-direction: column; justify-content: center; }
+      .finish-copy .dek { max-width: 620px; }
+      .finish-copy .hero-meta { max-width: 600px; }
+      .toolbar { display: grid; min-height: 60px; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 12px; padding: 0 28px; color: #eef3e9; }
+      .toolbar-left, .toolbar-right, .toolbar-nav { display: flex; align-items: center; gap: 8px; }
+      .toolbar-right { justify-content: flex-end; }
+      .toolbar button { min-width: 42px; min-height: 40px; padding: 0 11px; border: 1px solid rgba(237,243,229,.3); border-radius: 9px; background: rgba(255,255,255,.07); color: #fff; font-size: 13px; cursor: pointer; }
+      .toolbar button:hover, .toolbar button[aria-pressed="true"] { border-color: #b9cea8; background: rgba(189,211,167,.18); }
+      .toolbar button:disabled { opacity: .38; cursor: default; }
+      .counter { min-width: 74px; color: #dce7d6; font-size: 13px; text-align: center; font-variant-numeric: tabular-nums; }
+      .progress-track { position: fixed; right: 0; bottom: 0; left: 0; z-index: 5; height: 3px; background: rgba(255,255,255,.12); }
+      .progress-fill { width: 12.5%; height: 100%; background: #dfd09a; transition: width .25s ease; }
+      .notes-panel { position: fixed; right: 24px; bottom: 75px; z-index: 10; display: none; width: min(400px, calc(100vw - 36px)); padding: 17px 18px; border: 1px solid #c8d8bd; border-radius: 13px; background: #fffefa; box-shadow: 0 15px 45px rgba(0,0,0,.23); color: var(--ink); }
+      .notes-panel.open { display: block; }
+      .notes-panel strong { color: var(--soy); font-size: 13px; letter-spacing: .1em; }
+      .notes-panel p { margin: 8px 0 0; color: #4e5d50; font-size: 15px; line-height: 1.55; }
+      .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; }
+
+      @media (max-width: 850px) {
+        .stage { padding: 10px 10px 5px; }
+        .slide { width: calc(100vw - 20px); aspect-ratio: auto; min-height: calc(100dvh - 82px); max-height: none; padding: 25px 24px; overflow-y: auto; border-radius: 13px; }
+        .slide.active { animation: none; }
+        h1 { font-size: clamp(40px, 5.2vw, 56px); }
+        h2 { font-size: clamp(29px, 3.6vw, 36px); }
+        h3 { font-size: clamp(18px, 2vw, 21px); }
+        .slide-footer { font-size: 12px; }
+        .hero-grid { grid-template-columns: 1fr .45fr; }
+        .hero-mark { min-height: 170px; }
+        .hero-number { width: 120px; border-radius: 28px; }
+        .hero-number strong { font-size: 44px; }
+        .principle { min-height: 160px; padding: 15px; }
+        .flow { grid-template-columns: repeat(3, 1fr); }
+        .flow-card { min-height: 145px; }
+        .flow-card:not(:last-child)::after { display: none; }
+        .toolbar { padding: 0 11px; }
+        .toolbar-left span { display: none; }
+        .notes-panel { right: 12px; bottom: 69px; }
+      }
+      @media (max-width: 560px) {
+        .slide { padding: 21px 18px; }
+        .slide-topline .course-tag { font-size: 11px; }
+        h1 { font-size: 39px; }
+        h2 { font-size: 29px; }
+        .hero-grid { grid-template-columns: 1fr; }
+        .hero-mark { min-height: 145px; }
+        .hero-mark::before { width: 135px; }
+        .hero-mark::after { width: 115px; }
+        .hero-number { width: 100px; border-radius: 24px; }
+        .hero-number strong { font-size: 38px; }
+        .cover-ribbon { position: static; display: grid; gap: 5px; margin-top: 17px; }
+        .principles, .feature-grid, .guardrails, .setup-flow, .course-grid { grid-template-columns: 1fr; }
+        .principle, .feature-card, .setup-step { min-height: unset; }
+        .flow { grid-template-columns: 1fr 1fr; }
+        .flow-card { min-height: 134px; }
+        .course-card { min-height: 104px; }
+        .teacher-layout { grid-template-columns: 1fr; }
+        .threshold { grid-template-columns: 103px 1fr; }
+        .demo-row { grid-template-columns: 52px 1fr; gap: 6px 10px; }
+        .demo-row span { grid-column: 2; }
+        .slide-footer { font-size: 11px; }
+        .toolbar { grid-template-columns: auto 1fr auto; gap: 5px; padding: 0 7px; }
+        .toolbar button { min-width: 38px; min-height: 38px; padding: 0 8px; font-size: 11px; }
+        .toolbar-left { gap: 4px; }
+        .toolbar-nav { gap: 3px; }
+        .toolbar-right { gap: 4px; }
+        .counter { min-width: 57px; font-size: 10px; }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; transition-duration: .01ms !important; }
+      }
+      @page { size: 13.333in 7.5in; margin: 0; }
+      @media print {
+        html, body { width: 13.333in; height: auto; overflow: visible; background: #fff; }
+        .presentation { display: block; width: 13.333in; height: auto; }
+        .stage { display: block; padding: 0; }
+        .slide, .slide.active { display: flex !important; width: 13.333in; height: 7.5in; min-height: 0; max-height: none; aspect-ratio: auto; overflow: hidden; margin: 0; padding: .48in .68in; border: 0; border-radius: 0; box-shadow: none; break-after: page; page-break-after: always; animation: none; print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+        .slide:last-child { break-after: auto; page-break-after: auto; }
+        .toolbar, .progress-track, .notes-panel { display: none !important; }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="presentation" aria-label="콩셈콩셈 교사 대상 소개 발표자료">
+      <div class="stage" id="stage" aria-live="polite">
+        <section class="slide active" data-title="콩셈콩셈 소개" data-notes="인사 후 핵심을 한 문장으로 소개합니다. 콩셈콩셈은 정답을 빨리 맞히게 하는 도구라기보다, 학생이 풀고 질문하고 설명하는 학습 흐름을 만드는 도구입니다.">
+          <div class="slide-topline"><div class="brand"><span class="brand-mark"><svg viewBox="0 0 40 40" fill="none" aria-hidden="true"><path d="M18.8 7.2c-5.8-3-11.4 1.5-10.1 8.7 1.2 6.5 7.2 12.9 12.5 11.3 5.4-1.7 4.7-16.7-2.4-20Z" fill="#89a861"/><path d="M27.9 17.2c5.4-2.3 10 2.1 7.7 8.1-1.7 4.5-6.6 8-10.7 5.5-3.9-2.4-2.8-11.2 3-13.6Z" fill="#b44d52"/><path d="m13 8 8 14m9-3-5 9" stroke="#fffefa" stroke-width="1.8" stroke-linecap="round"/></svg></span><span>콩셈콩셈</span></div><span class="course-tag">교사 대상 소개</span></div>
+          <div class="hero-grid"><div class="hero-copy"><p class="eyebrow">콩콩팥팥, 내가 열심히 한 만큼</p><h1>풀고, 묻고,<br /><em>설명하며</em> 자라는 수학</h1><p class="dek">오늘의 짧은 미션부터 교사의 학급 분석까지.<br />학생의 풀이 과정이 다음 배움으로 이어지는 초등 수학 학습 앱입니다.</p><div class="hero-meta"><span>3–6학년</span><span>2학기 교육과정</span><span>학생·교사 화면</span></div></div><div class="hero-mark" aria-hidden="true"><div class="hero-number"><strong>콩</strong><span>수학 배움</span><i>팥</i></div></div></div>
+          <div class="cover-ribbon"><strong>한 번 더 연습할 수 있고, 익숙해지면 가르칠 수 있어요.</strong><span>미션 · 질문 · 도전 · 학습 기록</span></div>
+          <footer class="slide-footer"><span>콩셈콩셈 | 교사 공유용 발표자료</span><strong>01 / 08</strong></footer><aside class="sr-only">발표자 노트: 인사 후 핵심을 한 문장으로 소개합니다. 콩셈콩셈은 정답을 빨리 맞히게 하는 도구라기보다, 학생이 풀고 질문하고 설명하는 학습 흐름을 만드는 도구입니다.</aside>
+        </section>
+
+        <section class="slide" data-title="학습 설계" data-notes="학생이 정답을 틀려도 바로 끝나지 않고, 같은 개념의 다른 문제와 설명을 만날 수 있습니다. 충분히 익힌 학생은 풀이를 설명하거나 도전 문제를 풀 수 있습니다.">
+          <div class="slide-topline"><div class="brand"><span class="brand-mark"><svg viewBox="0 0 40 40" fill="none" aria-hidden="true"><path d="M18.8 7.2c-5.8-3-11.4 1.5-10.1 8.7 1.2 6.5 7.2 12.9 12.5 11.3 5.4-1.7 4.7-16.7-2.4-20Z" fill="#89a861"/><path d="M27.9 17.2c5.4-2.3 10 2.1 7.7 8.1-1.7 4.5-6.6 8-10.7 5.5-3.9-2.4-2.8-11.2 3-13.6Z" fill="#b44d52"/><path d="m13 8 8 14m9-3-5 9" stroke="#fffefa" stroke-width="1.8" stroke-linecap="round"/></svg></span><span>콩셈콩셈</span></div><span class="course-tag">학습 설계</span></div>
+          <div class="content"><div class="slide-kicker">정답 하나보다, 이해로 가는 흐름</div><h2>학생마다 다른 배움의 속도를<br />같은 화면 안에서 존중합니다</h2><p class="dek">짧게 풀고, 필요한 도움을 받고, 익숙해지면 더 깊게 생각하는 단계형 경험입니다.</p><div class="principles"><article class="principle"><span class="index">01</span><h3>작게 시작하기</h3><p>오늘의 배움을 짧은 미션으로 나누어 한 번에 한 개념에 집중합니다.</p></article><article class="principle"><span class="index">02</span><h3>다른 방법으로 다시 보기</h3><p>틀리면 같은 개념의 변형 문제와 그림·힌트로 다시 살펴볼 수 있습니다.</p></article><article class="principle"><span class="index">03</span><h3>설명하며 확장하기</h3><p>‘콩이에게 가르치기’와 단원별 도전으로 익숙한 학생의 생각도 확장합니다.</p></article></div><div class="callout"><strong>진도 원칙</strong><span>정답을 맞히거나 오늘 학습을 마무리하면 24시간 후 다음 단계가 열립니다. ‘함께 공부’는 언제든 이용할 수 있습니다.</span></div></div>
+          <footer class="slide-footer"><span>학습 설계 | 작은 성공을 이어가는 구조</span><strong>02 / 08</strong></footer><aside class="sr-only">발표자 노트: 학생이 정답을 틀려도 바로 끝나지 않고, 같은 개념의 다른 문제와 설명을 만날 수 있습니다. 충분히 익힌 학생은 풀이를 설명하거나 도전 문제를 풀 수 있습니다.</aside>
+        </section>
+
+        <section class="slide" data-title="학생의 학습 흐름" data-notes="학생은 학년과 학급으로 로그인합니다. 오늘 미션이 기본 시작점이며, 막히는 순간에는 튜터 모드를 바꿔 요청할 수 있습니다. 대결은 단원 문제를 한 번씩 풀며 진행됩니다.">
+          <div class="slide-topline"><div class="brand"><span class="brand-mark"><svg viewBox="0 0 40 40" fill="none" aria-hidden="true"><path d="M18.8 7.2c-5.8-3-11.4 1.5-10.1 8.7 1.2 6.5 7.2 12.9 12.5 11.3 5.4-1.7 4.7-16.7-2.4-20Z" fill="#89a861"/><path d="M27.9 17.2c5.4-2.3 10 2.1 7.7 8.1-1.7 4.5-6.6 8-10.7 5.5-3.9-2.4-2.8-11.2 3-13.6Z" fill="#b44d52"/><path d="m13 8 8 14m9-3-5 9" stroke="#fffefa" stroke-width="1.8" stroke-linecap="round"/></svg></span><span>콩셈콩셈</span></div><span class="course-tag">학생 경험</span></div>
+          <div class="content"><div class="slide-kicker">학생이 만나는 하루의 공부</div><h2>로그인에서 복습까지,<br />한 걸음씩 이어집니다</h2><div class="flow"><article class="flow-card"><b>1</b><h3>학년 선택</h3><p>3–6학년 2학기 중 알맞은 교육과정으로 로그인합니다.</p></article><article class="flow-card"><b>2</b><h3>오늘 미션</h3><p>짧은 문제로 핵심 개념을 확인하고 풀이를 제출합니다.</p></article><article class="flow-card"><b>3</b><h3>필요한 도움</h3><p>개념 설명, 힌트, 풀이 확인, 가르치기 모드를 고릅니다.</p></article><article class="flow-card"><b>4</b><h3>단원 도전</h3><p>문제당 한 번 답하고, 정답·오답을 바로 확인합니다.</p></article><article class="flow-card"><b>5</b><h3>기록 누적</h3><p>시도·정답·힌트와 차시 진도가 다음 학습에 연결됩니다.</p></article></div><div class="callout red"><strong>기록 원칙</strong><span>AI 대결은 같은 문제를 반복하지 않습니다. 단원 문제를 모두 풀면 완료 안내를 보여줍니다.</span></div></div>
+          <footer class="slide-footer"><span>학생 경험 | 질문하고 다시 시도할 수 있는 구조</span><strong>03 / 08</strong></footer><aside class="sr-only">발표자 노트: 학생은 학년과 학급으로 로그인합니다. 오늘 미션이 기본 시작점이며, 막히는 순간에는 튜터 모드를 바꿔 요청할 수 있습니다. 대결은 단원 문제를 한 번씩 풀며 진행됩니다.</aside>
+        </section>
+
+        <section class="slide" data-title="학년별 교육과정" data-notes="학년별 단원은 공통 2022 개정 교육과정 순서를 기준으로 구성했습니다. 각 학년의 정확한 단원명과 미션 단계 수를 보여주고, 다른 학년 콘텐츠가 섞이지 않도록 로그인 학년으로 분리합니다.">
+          <div class="slide-topline"><div class="brand"><span class="brand-mark"><svg viewBox="0 0 40 40" fill="none" aria-hidden="true"><path d="M18.8 7.2c-5.8-3-11.4 1.5-10.1 8.7 1.2 6.5 7.2 12.9 12.5 11.3 5.4-1.7 4.7-16.7-2.4-20Z" fill="#89a861"/><path d="M27.9 17.2c5.4-2.3 10 2.1 7.7 8.1-1.7 4.5-6.6 8-10.7 5.5-3.9-2.4-2.8-11.2 3-13.6Z" fill="#b44d52"/><path d="m13 8 8 14m9-3-5 9" stroke="#fffefa" stroke-width="1.8" stroke-linecap="round"/></svg></span><span>콩셈콩셈</span></div><span class="course-tag">3–6학년 · 2학기</span></div>
+          <div class="content"><div class="slide-kicker">현재 제공하는 범위</div><h2>같은 학습 경험,<br />학년에 맞는 여섯 단원</h2><div class="course-grid"><article class="course-card"><span class="course-grade">3학년</span><h3>계산과 기초 개념 · 24단계</h3><p>곱셈 · 나눗셈 · 원 · 분수 · 들이와 무게 · 자료의 정리</p></article><article class="course-card"><span class="course-grade">4학년</span><h3>분수·도형·그래프 · 28단계</h3><p>분수의 덧뺄셈 · 삼각형 · 소수의 덧뺄셈 · 사각형 · 꺾은선그래프 · 다각형</p></article><article class="course-card"><span class="course-grade">5학년</span><h3>범위·곱셈·도형 · 24단계</h3><p>수의 범위와 어림 · 분수의 곱셈 · 합동과 대칭 · 소수의 곱셈 · 직육면체 · 평균과 가능성</p></article><article class="course-card"><span class="course-grade">6학년</span><h3>나눗셈·비례·입체 · 24단계</h3><p>분수의 나눗셈 · 소수의 나눗셈 · 공간과 입체 · 비례식과 비례배분 · 원의 넓이 · 원기둥·원뿔·구</p></article></div><div class="callout"><strong>학년 분리</strong><span>로그인 학년과 학생 프로필 학년을 확인해 해당 교육과정과 학습 기록만 연결합니다.</span></div></div>
+          <footer class="slide-footer"><span>교육과정 | 학년별 6개 단원, 하루 미션 24–28단계</span><strong>04 / 08</strong></footer><aside class="sr-only">발표자 노트: 학년별 단원은 공통 2022 개정 교육과정 순서를 기준으로 구성했습니다. 각 학년의 정확한 단원명과 미션 단계 수를 보여주고, 다른 학년 콘텐츠가 섞이지 않도록 로그인 학년으로 분리합니다.</aside>
+        </section>
+
+        <section class="slide" data-title="탐구 도구" data-notes="도형 놀이터는 학년 범위에 맞춰 2D 도형과 3D 블록·입체를 살펴봅니다. 움직이는 장치 제작소는 교사가 학급에 열었을 때만 사용 가능하며, 중력과 충돌을 반영하지만 수업용 단순화 물리 모형입니다. AI의 자유 대화나 설명을 100% 정확하다고 표현하지 말고 교사 확인과 함께 소개하세요.">
+          <div class="slide-topline"><div class="brand"><span class="brand-mark"><svg viewBox="0 0 40 40" fill="none" aria-hidden="true"><path d="M18.8 7.2c-5.8-3-11.4 1.5-10.1 8.7 1.2 6.5 7.2 12.9 12.5 11.3 5.4-1.7 4.7-16.7-2.4-20Z" fill="#89a861"/><path d="M27.9 17.2c5.4-2.3 10 2.1 7.7 8.1-1.7 4.5-6.6 8-10.7 5.5-3.9-2.4-2.8-11.2 3-13.6Z" fill="#b44d52"/><path d="m13 8 8 14m9-3-5 9" stroke="#fffefa" stroke-width="1.8" stroke-linecap="round"/></svg></span><span>콩셈콩셈</span></div><span class="course-tag">직접 탐구</span></div>
+          <div class="content"><div class="slide-kicker">문제 풀이에 탐구 경험 더하기</div><h2>보고, 움직이고,<br />내 방식으로 실험합니다</h2><div class="feature-grid"><article class="feature-card"><span class="label">01 · 표현</span><h3>분수·대분수 입력 틀</h3><p>분자·분모와 자연수를 따로 넣어 수식을 읽기 쉽게 만들어요.</p></article><article class="feature-card"><span class="label">02 · 시각화</span><h3>도형 놀이터</h3><p>다각형의 변 수, 대칭축, 원의 반지름과 입체도형을 조작해요.</p></article><article class="feature-card"><span class="label">03 · 구성</span><h3>움직이는 장치 제작소</h3><p>3D 공간에 경사로·블록·회전판·지렛대를 놓고 구슬 경로를 만듭니다.</p></article><article class="feature-card"><span class="label">04 · 협력</span><h3>친구와 장치 공유</h3><p>배치 링크로 장치를 나눌 수 있어요. 친구 학급도 교사 해금이 필요합니다.</p></article></div><div class="callout red"><strong>정확성 안내</strong><span>장치 물리는 학습용 단순화 모형이고, AI 자유 응답의 완전무결을 보장하지 않습니다. 수업 자료와 함께 확인해 주세요.</span></div></div>
+          <footer class="slide-footer"><span>탐구 도구 | 교사가 열고 닫는 3D 활동 포함</span><strong>05 / 08</strong></footer><aside class="sr-only">발표자 노트: 도형 놀이터는 학년 범위에 맞춰 2D 도형과 3D 블록·입체를 살펴봅니다. 움직이는 장치 제작소는 교사가 학급에 열었을 때만 사용 가능하며, 중력과 충돌을 반영하지만 수업용 단순화 물리 모형입니다. AI의 자유 대화나 설명을 100% 정확하다고 표현하지 말고 교사 확인과 함께 소개하세요.</aside>
+        </section>
+
+        <section class="slide" data-title="교사 대시보드" data-notes="학습 데이터가 있어야 실제 통계가 보입니다. Supabase SQL과 교사 계정 및 프로필, 학생 계정이 준비되어야 합니다. 차트는 기록을 합산하고 개인별 상세로 들어갈 수 있어 수업 중 추가 확인할 학생과 개념을 찾는 데 활용할 수 있습니다.">
+          <div class="slide-topline"><div class="brand"><span class="brand-mark"><svg viewBox="0 0 40 40" fill="none" aria-hidden="true"><path d="M18.8 7.2c-5.8-3-11.4 1.5-10.1 8.7 1.2 6.5 7.2 12.9 12.5 11.3 5.4-1.7 4.7-16.7-2.4-20Z" fill="#89a861"/><path d="M27.9 17.2c5.4-2.3 10 2.1 7.7 8.1-1.7 4.5-6.6 8-10.7 5.5-3.9-2.4-2.8-11.2 3-13.6Z" fill="#b44d52"/><path d="m13 8 8 14m9-3-5 9" stroke="#fffefa" stroke-width="1.8" stroke-linecap="round"/></svg></span><span>콩셈콩셈</span></div><span class="course-tag">교사 대시보드</span></div>
+          <div class="content"><div class="slide-kicker">학생 기록을 수업의 다음 질문으로</div><h2>학급 경향과 개인별 단서를<br />함께 살펴봅니다</h2><div class="teacher-layout"><div class="metric-stack"><div class="metric"><span class="icon">개념</span><div><strong>단원·개념별 정답률</strong><small>시도 수와 정답 수를 함께 표시</small></div><span class="arrow">↗</span></div><div class="metric"><span class="icon">학생</span><div><strong>학생별 학습 상태</strong><small>도움 필요 · 연습 중 · 익숙해요</small></div><span class="arrow">↗</span></div><div class="metric"><span class="icon">진도</span><div><strong>오늘의 배움 단계</strong><small>현재 차시와 다음 학습 상태</small></div><span class="arrow">↗</span></div><div class="metric"><span class="icon">대화</span><div><strong>최근 대화 확인</strong><small>학생별 최신 대화와 최근 대화 목록</small></div><span class="arrow">↗</span></div></div><aside class="threshold-card"><h3>‘익숙해요’ 표시 기준</h3><p>참고용 숙련도예요. 성적이나 표준화 검사 결과를 대신하지 않습니다.</p><div class="threshold"><strong>개념별</strong><span>4회 이상 시도 · 정답률 80% 이상 · 연속 2회 정답 · 힌트 절반 이하</span></div><div class="threshold"><strong>도움 필요</strong><span>2회 이상 시도한 개념의 정답률이 50% 미만</span></div><div class="threshold"><strong>종합 익숙</strong><span>전체 개념 60% 이상 확인, 확인한 개념 중 80% 이상이 익숙</span></div></aside></div><div class="callout"><strong>기록이 적으면</strong><span>수준을 섣불리 정하지 않고 ‘기록 쌓는 중’으로 표시합니다.</span></div></div>
+          <footer class="slide-footer"><span>교사 지원 | 실제 학습 기록이 쌓여야 통계가 표시됩니다</span><strong>06 / 08</strong></footer><aside class="sr-only">발표자 노트: 학습 데이터가 있어야 실제 통계가 보입니다. Supabase SQL과 교사 계정 및 프로필, 학생 계정이 준비되어야 합니다. 차트는 기록을 합산하고 개인별 상세로 들어갈 수 있어 수업 중 추가 확인할 학생과 개념을 찾는 데 활용할 수 있습니다.</aside>
+        </section>
+
+        <section class="slide" data-title="운영과 학생 보호" data-notes="도입에는 최신 supabase-schema.sql 실행, 서버 환경 변수 설정, 교사 Auth 계정과 profiles 연결, 학생 명단 등록 순서가 필요합니다. 학생은 24시간 유효 1회 코드로 비밀번호를 직접 만들며, 교사는 로그인 상태에서 비밀번호 변경 가능하지만 비밀번호를 잊고 로그아웃한 교사 계정에는 앱 내 이메일 재설정 기능이 없습니다. AI 정확도는 완벽하다고 약속하지 않습니다.">
+          <div class="slide-topline"><div class="brand"><span class="brand-mark"><svg viewBox="0 0 40 40" fill="none" aria-hidden="true"><path d="M18.8 7.2c-5.8-3-11.4 1.5-10.1 8.7 1.2 6.5 7.2 12.9 12.5 11.3 5.4-1.7 4.7-16.7-2.4-20Z" fill="#89a861"/><path d="M27.9 17.2c5.4-2.3 10 2.1 7.7 8.1-1.7 4.5-6.6 8-10.7 5.5-3.9-2.4-2.8-11.2 3-13.6Z" fill="#b44d52"/><path d="m13 8 8 14m9-3-5 9" stroke="#fffefa" stroke-width="1.8" stroke-linecap="round"/></svg></span><span>콩셈콩셈</span></div><span class="course-tag">도입과 보호</span></div>
+          <div class="content"><div class="slide-kicker">학교·학급에서 시작하기</div><h2>계정을 준비하고,<br />기록은 학급 범위로 관리합니다</h2><div class="guardrails"><article class="guardrail"><b>01 · Supabase 준비</b><p>최신 설정 SQL을 실행하고 서버에 URL·공개 키·서버 비밀 키를 설정합니다.</p></article><article class="guardrail"><b>02 · 교사 계정</b><p>Auth 계정 생성 후 UUID를 학년·반과 함께 `profiles`에 연결합니다.</p></article><article class="guardrail"><b>03 · 학생 시작</b><p>명단을 등록하고 24시간 유효 1회 코드를 학생별로 전달합니다.</p></article></div><div class="setup-flow"><article class="setup-step"><span class="num">학급 범위</span><h3>교사는 담당 학급만</h3><p>로그인 프로필과 RLS 정책으로 다른 학급 기록을 분리합니다.</p></article><article class="setup-step"><span class="num">비밀번호</span><h3>Auth에서 보호</h3><p>비밀번호 원문은 학습 로그에 저장하지 않습니다. 학생은 초기 코드를 사용하고 교사는 로그인 후 비밀번호를 변경할 수 있습니다.</p></article><article class="setup-step"><span class="num">AI 안내</span><h3>교사 판단과 함께</h3><p>학생 이름·학급 정보는 수학 질문과 함께 AI 제공자에게 보내지 않습니다. AI 자유 응답은 검토가 필요합니다.</p></article></div><div class="callout red"><strong>운영 전 확인</strong><span>로그아웃한 교사가 비밀번호를 잊은 경우 앱 내 이메일 재설정 기능은 없습니다. 관리자 지원 절차를 학교에서 미리 정해 주세요.</span></div></div>
+          <footer class="slide-footer"><span>학생 개인정보 · 인증 · AI 안내의 한계를 함께 설명합니다</span><strong>07 / 08</strong></footer><aside class="sr-only">발표자 노트: 도입에는 최신 supabase-schema.sql 실행, 서버 환경 변수 설정, 교사 Auth 계정과 profiles 연결, 학생 명단 등록 순서가 필요합니다. 학생은 24시간 유효 1회 코드로 비밀번호를 직접 만들며, 교사는 로그인 상태에서 비밀번호 변경 가능하지만 비밀번호를 잊고 로그아웃한 교사 계정에는 앱 내 이메일 재설정 기능이 없습니다. AI 정확도는 완벽하다고 약속하지 않습니다.</aside>
+        </section>
+
+        <section class="slide" data-title="5분 시연 제안" data-notes="준비된 교사·학생 계정으로 시연하되 실제 학생 이름은 화면 공유 전 가리거나 테스트 계정을 사용합니다. 장치 제작소는 교사가 해당 학급에서 먼저 열어 둬야 합니다. 발표 마지막에는 원하는 학년과 수업 주제를 받아 다음 활동을 정하는 질문으로 마무리할 수 있습니다.">
+          <div class="slide-topline"><div class="brand"><span class="brand-mark"><svg viewBox="0 0 40 40" fill="none" aria-hidden="true"><path d="M18.8 7.2c-5.8-3-11.4 1.5-10.1 8.7 1.2 6.5 7.2 12.9 12.5 11.3 5.4-1.7 4.7-16.7-2.4-20Z" fill="#89a861"/><path d="M27.9 17.2c5.4-2.3 10 2.1 7.7 8.1-1.7 4.5-6.6 8-10.7 5.5-3.9-2.4-2.8-11.2 3-13.6Z" fill="#b44d52"/><path d="m13 8 8 14m9-3-5 9" stroke="#fffefa" stroke-width="1.8" stroke-linecap="round"/></svg></span><span>콩셈콩셈</span></div><span class="course-tag">시연 제안</span></div>
+          <div class="content"><div class="slide-kicker">제품을 보여주는 5분</div><h2>학생 화면에서 교사 판단까지,<br />짧은 흐름으로 보여주세요</h2><div class="demo-agenda"><div class="demo-row"><time>0:00–0:30</time><strong>학년 선택과 오늘 미션</strong><span>오늘의 문제·진도 흐름</span></div><div class="demo-row"><time>0:30–1:30</time><strong>한 문제 풀고 도움 방식 바꾸기</strong><span>힌트 또는 콩이에게 가르치기</span></div><div class="demo-row"><time>1:30–2:20</time><strong>분수 틀과 시각 자료</strong><span>질문 입력부터 그림 설명까지</span></div><div class="demo-row"><time>2:20–3:20</time><strong>도형 놀이터 또는 3D 장치</strong><span>장치 시연 전 교사 해금 확인</span></div><div class="demo-row"><time>3:20–4:20</time><strong>교사 대시보드</strong><span>학급 개념 요약과 학생 상세</span></div><div class="demo-row"><time>4:20–5:00</time><strong>도입 조건과 질문</strong><span>계정 준비·데이터 정책·시범 범위</span></div></div><div class="callout"><strong>시작 제안</strong><span>한 학년, 한 단원, 소규모 학생으로 먼저 사용해 보고 문제·설명·통계가 수업에 맞는지 교사와 함께 점검합니다.</span></div></div>
+          <footer class="slide-footer"><span>시연 전에 테스트 계정과 장치 제작소 해금 여부를 확인하세요</span><strong>08 / 08</strong></footer><aside class="sr-only">발표자 노트: 준비된 교사·학생 계정으로 시연하되 실제 학생 이름은 화면 공유 전 가리거나 테스트 계정을 사용합니다. 장치 제작소는 교사가 해당 학급에서 먼저 열어 둬야 합니다. 발표 마지막에는 원하는 학년과 수업 주제를 받아 다음 활동을 정하는 질문으로 마무리할 수 있습니다.</aside>
+        </section>
+      </div>
+      <nav class="toolbar" aria-label="발표 조작">
+        <div class="toolbar-left"><button type="button" id="notes-toggle" aria-pressed="false" title="발표자 노트 (N)">노트 <span>N</span></button><button type="button" id="fullscreen-toggle" title="전체 화면 (F)">전체 화면 <span>F</span></button></div>
+        <div class="toolbar-nav"><button type="button" id="previous-slide" aria-label="이전 슬라이드">←</button><span class="counter" id="slide-counter">01 / 08</span><button type="button" id="next-slide" aria-label="다음 슬라이드">→</button></div>
+        <div class="toolbar-right"><span id="slide-title-small">콩셈콩셈 소개</span><button type="button" id="print-slides" title="인쇄하거나 PDF로 저장">인쇄</button></div>
+      </nav>
+      <aside class="notes-panel" id="notes-panel" aria-live="polite"><strong>발표자 노트</strong><p></p></aside>
+      <div class="progress-track" aria-hidden="true"><div class="progress-fill" id="progress-fill"></div></div>
+      <div class="sr-only" id="slide-announcement" aria-live="polite"></div>
+    </main>
+    <script>
+      const slides = [...document.querySelectorAll('.slide')];
+      const previousButton = document.querySelector('#previous-slide');
+      const nextButton = document.querySelector('#next-slide');
+      const counter = document.querySelector('#slide-counter');
+      const title = document.querySelector('#slide-title-small');
+      const progress = document.querySelector('#progress-fill');
+      const announcement = document.querySelector('#slide-announcement');
+      const notesPanel = document.querySelector('#notes-panel');
+      let current = 0;
+
+      function showSlide(index) {
+        current = Math.max(0, Math.min(slides.length - 1, index));
+        slides.forEach((slide, slideIndex) => {
+          const active = slideIndex === current;
+          slide.classList.toggle('active', active);
+          slide.setAttribute('aria-hidden', String(!active));
+        });
+        const display = `${String(current + 1).padStart(2, '0')} / ${String(slides.length).padStart(2, '0')}`;
+        counter.textContent = display;
+        title.textContent = slides[current].dataset.title;
+        progress.style.width = `${((current + 1) / slides.length) * 100}%`;
+        previousButton.disabled = current === 0;
+        nextButton.disabled = current === slides.length - 1;
+        announcement.textContent = `${display} ${slides[current].dataset.title}`;
+        notesPanel.querySelector('p').textContent = slides[current].dataset.notes;
+        history.replaceState(null, '', `#${current + 1}`);
+      }
+
+      previousButton.addEventListener('click', () => showSlide(current - 1));
+      nextButton.addEventListener('click', () => showSlide(current + 1));
+      document.querySelector('#notes-toggle').addEventListener('click', (event) => {
+        const open = !notesPanel.classList.contains('open');
+        notesPanel.classList.toggle('open', open);
+        event.currentTarget.setAttribute('aria-pressed', String(open));
+      });
+      document.querySelector('#fullscreen-toggle').addEventListener('click', async () => {
+        try {
+          if (!document.fullscreenElement) await document.documentElement.requestFullscreen();
+          else await document.exitFullscreen();
+        } catch { /* Fullscreen may be unavailable in embedded previews. */ }
+      });
+      document.querySelector('#print-slides').addEventListener('click', () => window.print());
+      document.addEventListener('keydown', (event) => {
+        if (event.altKey || event.ctrlKey || event.metaKey) return;
+        if (event.target.closest('input, textarea, select, [contenteditable="true"]')) return;
+        if (event.key === ' ' && event.target.closest('button, a')) return;
+        if (['ArrowRight', 'PageDown', ' '].includes(event.key)) { event.preventDefault(); showSlide(current + 1); }
+        else if (['ArrowLeft', 'PageUp'].includes(event.key)) { event.preventDefault(); showSlide(current - 1); }
+        else if (event.key === 'Home') showSlide(0);
+        else if (event.key === 'End') showSlide(slides.length - 1);
+        else if (event.key.toLowerCase() === 'n') document.querySelector('#notes-toggle').click();
+        else if (event.key.toLowerCase() === 'f') document.querySelector('#fullscreen-toggle').click();
+      });
+      const initialSlide = Number(location.hash.slice(1));
+      showSlide(Number.isInteger(initialSlide) && initialSlide > 0 ? initialSlide - 1 : 0);
+    </script>
+  </body>
+</html>

@@ -1,0 +1,266 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#28365d" />
+    <title>콩셈콩셈 | 3~6학년 2학기 수학</title>
+    <link rel="icon" href="./favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="./style.css" />
+    <link rel="stylesheet" href="./bean-theme.css" />
+    <script type="module" src="./app.js"></script>
+  </head>
+  <body>
+    <div class="app-shell">
+      <section class="role-screen login-screen" id="login-screen" aria-labelledby="login-title">
+        <header class="app-topbar portal-topbar">
+          <a class="brand" href="#login-screen" aria-label="콩셈콩셈 홈"><span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 40 40" fill="none"><rect x="2" y="2" width="36" height="36" rx="13" fill="currentColor"/><path d="M12 13h16M20 11v18M13 27l14-14" stroke="#fff" stroke-width="2.7" stroke-linecap="round"/></svg></span><span class="brand-copy"><strong>콩셈콩셈</strong><small>콩콩팥팥, 내가 열심히 한 만큼</small></span></a>
+          <span class="grade-badge" id="portal-grade-badge">3~6학년 2학기</span><button class="help-button" id="help-button" aria-label="사용 방법 보기">?</button>
+        </header>
+        <main class="portal-main">
+          <p class="eyebrow" id="portal-course-label">3~6학년 2학기 수학</p>
+          <h1 id="login-title">누구로 들어갈까요?</h1>
+          <p class="portal-intro">필요한 화면을 골라 시작해요.</p>
+          <div class="role-options">
+            <button class="role-card student-role" id="student-login" type="button"><span class="role-icon" aria-hidden="true">학</span><span><strong>학생 로그인</strong><small>미션, 공책, 콩이와 대결</small></span><span class="role-arrow" aria-hidden="true">→</span></button>
+            <button class="role-card teacher-role" id="teacher-login" type="button"><span class="role-icon" aria-hidden="true">교</span><span><strong>교사 로그인</strong><small>학급 학습 현황 대시보드</small></span><span class="role-arrow" aria-hidden="true">→</span></button>
+          </div>
+          <span class="bean-pair portal-bean-pair" aria-hidden="true"><i class="bean-seed soybean"></i><i class="bean-seed adzuki"></i></span>
+          <p class="auth-note">관리자 설정을 마치면 학생·교사 계정으로 로그인할 수 있어요.</p>
+          <button class="setup-open-button" id="open-supabase-setup" type="button">Supabase 설정 보기</button>
+        </main>
+      </section>
+
+      <section class="role-screen login-form-screen" id="student-login-screen" aria-labelledby="student-login-title" hidden>
+        <header class="app-topbar"><a class="brand" href="#login-screen" aria-label="콩셈콩셈"><span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 40 40" fill="none"><rect x="2" y="2" width="36" height="36" rx="13" fill="currentColor"/><path d="M12 13h16M20 11v18M13 27l14-14" stroke="#fff" stroke-width="2.7" stroke-linecap="round"/></svg></span><span class="brand-copy"><strong>콩셈콩셈</strong><small>학생 로그인</small></span></a><span class="grade-badge" id="student-login-grade-badge">4학년 2학기</span><button class="role-switch" data-back-role type="button">뒤로</button></header>
+        <main class="login-form-main"><p class="eyebrow">학생 로그인</p><h1 id="student-login-title">내 정보를 적어주세요.</h1><p class="login-form-intro">학년, 반, 번호, 이름을 적고 비밀번호를 입력해요.</p>
+          <form class="login-form" id="student-login-form">
+             <label>학년<select id="student-grade" name="grade" required><option value="3">3학년</option><option value="4" selected>4학년</option><option value="5">5학년</option><option value="6">6학년</option></select></label>
+             <label>반<input id="student-class" name="class" type="number" min="1" max="20" placeholder="예: 1" required /></label>
+            <label>번호<input id="student-number" name="number" type="number" min="1" max="50" placeholder="예: 12" required /></label>
+            <label class="wide-field">학교에 등록된 이름<input id="student-name" name="name" type="text" autocomplete="name" minlength="2" maxlength="30" title="한글 또는 영문 이름을 입력해 주세요." placeholder="예: 김민준" required /></label>
+            <div class="wide-field first-login-fields" id="student-first-login-fields" hidden><label>선생님에게 받은 1회 코드<input id="student-activation-code" type="text" inputmode="numeric" autocomplete="one-time-code" minlength="6" maxlength="6" placeholder="6자리 코드" /></label></div>
+            <label class="wide-field">비밀번호<input id="student-password" name="password" type="password" autocomplete="current-password" placeholder="Supabase Auth 비밀번호" required /><small class="password-hint" id="student-password-hint">이미 만든 계정은 등록한 비밀번호를 그대로 입력해요. 잊었다면 선생님께 초기화 코드를 받아 새 비밀번호를 만들어요.</small></label>
+            <label class="wide-field first-login-fields" id="student-password-confirm-wrap" hidden>비밀번호 다시 입력<input id="student-password-confirm" type="password" minlength="8" maxlength="16" autocomplete="new-password" placeholder="같은 비밀번호 입력" /></label>
+            <button class="login-submit wide-field" id="student-login-submit" type="submit">학생으로 들어가기</button>
+            <button class="first-login-toggle wide-field" id="student-first-login-toggle" type="button">처음 설정 / 비밀번호 잊음</button>
+            <p class="login-error wide-field" id="student-login-error" role="alert" hidden></p>
+          </form>
+          <p class="login-security-note">처음 설정하거나 잊어버린 비밀번호를 바꿀 때 선생님이 발급한 1회 코드가 필요해요. 비밀번호는 Supabase Auth에서 안전하게 관리합니다.</p>
+        </main>
+      </section>
+
+      <section class="role-screen login-form-screen" id="teacher-login-screen" aria-labelledby="teacher-login-title" hidden>
+        <header class="app-topbar"><a class="brand" href="#login-screen" aria-label="콩셈콩셈"><span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 40 40" fill="none"><rect x="2" y="2" width="36" height="36" rx="13" fill="currentColor"/><path d="M12 13h16M20 11v18M13 27l14-14" stroke="#fff" stroke-width="2.7" stroke-linecap="round"/></svg></span><span class="brand-copy"><strong>콩셈콩셈</strong><small>교사 로그인</small></span></a><span class="grade-badge">교사용</span><button class="role-switch" data-back-role type="button">뒤로</button></header>
+        <main class="login-form-main"><p class="eyebrow">교사 로그인</p><h1 id="teacher-login-title">교사 계정으로 로그인해요.</h1><p class="login-form-intro">학년을 선택한 뒤 해당 학년으로 등록한 Auth 이메일과 비밀번호를 입력해요.</p>
+          <form class="login-form" id="teacher-login-form">
+            <label class="wide-field">학년<select id="teacher-grade" name="grade" required><option value="3">3학년</option><option value="4" selected>4학년</option><option value="5">5학년</option><option value="6">6학년</option></select></label>
+            <label class="wide-field">Auth 이메일<input id="teacher-email" name="email" type="email" maxlength="254" autocomplete="username" placeholder="teacher-4-1@kongsem.invalid" required /><small class="password-hint" id="teacher-email-hint">예: 4학년 1반은 teacher-4-1@kongsem.invalid</small></label>
+            <label class="wide-field">비밀번호<input id="teacher-password" name="password" type="password" autocomplete="current-password" placeholder="Supabase Auth에 등록한 비밀번호" required /></label>
+            <button class="login-submit wide-field teacher-submit" type="submit">교사 화면으로 들어가기</button>
+            <p class="login-error wide-field" id="teacher-login-error" role="alert" hidden></p>
+          </form>
+          <p class="login-security-note">교사 계정은 관리자가 Supabase에 미리 등록해야 해요. 로그인하면 학년·반·이름은 저장된 프로필에서 불러옵니다.</p>
+        </main>
+      </section>
+
+      <section class="role-screen student-app" id="student-app" hidden>
+        <header class="app-topbar">
+          <a class="brand" href="#student-study" aria-label="학생 화면 처음으로"><span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 40 40" fill="none"><rect x="2" y="2" width="36" height="36" rx="13" fill="currentColor"/><path d="M12 13h16M20 11v18M13 27l14-14" stroke="#fff" stroke-width="2.7" stroke-linecap="round"/></svg></span><span class="brand-copy"><strong>콩셈콩셈</strong><small class="brand-slogan">콩콩팥팥, 내가 열심히 한 만큼</small></span></a>
+          <span class="grade-badge" id="student-app-grade-badge">4학년 2학기</span><span class="student-session-label" id="student-session-label"></span>
+          <button class="role-switch" data-back-login type="button">나가기</button><button class="help-button" aria-label="사용 방법 보기">?</button>
+        </header>
+        <nav class="student-tabs" aria-label="학생 학습 메뉴">
+          <button class="student-tab active" type="button" data-student-tab="study" aria-pressed="true">오늘 미션</button>
+          <button class="student-tab" type="button" data-student-tab="together" aria-pressed="false">함께 공부</button>
+          <button class="student-tab" type="button" data-student-tab="battle" aria-pressed="false">AI 대결</button>
+          <button class="student-tab" type="button" data-student-tab="geometry" aria-pressed="false"><span class="geometry-tab-full">도형 놀이터</span><span class="geometry-tab-short">도형</span></button>
+          <button class="student-tab machine-tab" type="button" data-student-tab="machine" aria-pressed="false"><span class="machine-tab-full">움직이는 장치 제작소</span><span class="machine-tab-short">장치</span><span class="machine-tab-lock" id="machine-tab-lock" aria-label="선생님이 잠금">잠김</span></button>
+          <button class="student-tab notebook-open" id="open-notebook" type="button" aria-haspopup="dialog">콩이 공책</button>
+        </nav>
+
+        <main class="student-main">
+          <section class="student-view" id="study-view">
+            <div class="page-heading">
+              <div><p class="eyebrow" id="today-unit-label">4학년 2학기 · 1단원</p><h1>오늘 배울 내용을<br />차근차근 살펴봐요.</h1><p class="heading-subtitle">미션을 마치고 24시간이 지나면 다음 내용이 열려요. 더 공부하고 싶으면 ‘함께 공부’에서 이어갈 수 있어요.</p></div>
+              <div class="heading-doodle" aria-hidden="true"><span class="bean-pair"><i class="bean-seed soybean"></i><i class="bean-seed adzuki"></i></span></div>
+            </div>
+
+            <section class="mini-quest" id="mission" aria-labelledby="quest-title">
+              <div class="quest-topline"><span class="quest-kicker" id="quest-kicker">분수의 덧셈과 뺄셈 · 오늘의 배움 1/4</span><span class="quest-time" id="quest-time">천천히 살펴봐요</span></div>
+              <div class="bean-garden"><div class="bean-garden-heading"><span>콩이의 수학 밭</span><strong id="bean-garden-progress">0 / 6 단원</strong></div><div class="bean-garden-seeds" id="bean-garden-seeds" role="group" aria-label="6개 단원별 학습 상태"></div><small id="bean-garden-note">정답보다 한 번 도전한 걸음부터 모아요.</small></div>
+              <p class="quest-session-note" id="quest-session-note" hidden></p>
+              <div class="quest-main"><h2 id="quest-title">2/7 + 3/7은 얼마일까요?</h2><p id="quest-question">일곱 조각 중 색칠한 조각을 함께 세어봐요.</p></div>
+              <div class="mission-visual" id="mission-visual"></div>
+              <p class="quest-hintline" id="quest-hintline">힌트: 분모가 같은 분수는 같은 크기 조각이에요. 분모는 그대로 두고 분자끼리 더해요.</p>
+              <div class="quest-choices" id="quest-choices" role="group" aria-label="답 고르기"></div>
+              <p class="quest-feedback" id="quest-feedback" role="status" aria-live="polite" hidden></p>
+              <button class="mission-skip-button" id="skip-mission" type="button" hidden>오늘은 여기까지 하고 함께 공부에서 더 연습하기</button>
+              <button class="quest-help-button" id="open-together-study" type="button">더 물어보거나 연습하기 · 함께 공부</button>
+              <p class="quest-footer" id="quest-footer">정답을 몰라도 괜찮아요. 그림을 세어 보고 골라봐요.</p>
+              <span class="quest-orbit orbit-one" aria-hidden="true"></span><span class="quest-orbit orbit-two" aria-hidden="true"></span>
+            </section>
+
+            <details class="history-drawer" id="history"><summary><span>내 질문 모아보기</span><span class="history-count" id="history-count">0</span></summary><div id="history-list" class="history-list"><p class="empty-history">아직 질문이 없어요. 궁금할 때 하나씩 모아봐요.</p></div><button class="history-clear" id="clear-history" type="button" hidden>질문·대화 기록 삭제</button></details>
+            <p class="privacy-note-bottom"><span aria-hidden="true">▣</span> 수학 대화와 학습 기록은 담당 교사에게 공유돼요.</p>
+          </section>
+
+          <section class="student-view feature-view together-view" id="study-together-view" hidden>
+            <div class="feature-heading"><p class="eyebrow">콩이와 함께</p><h1><span id="together-grade-title">4학년 2학기 수학,</span><br />원하는 만큼 공부해요.</h1><p class="heading-subtitle">단원을 골라 모르는 걸 물어봐요. 처음엔 그림과 풀이 과정으로 차근차근 설명해요.</p></div>
+            <label class="study-unit-picker">공부할 단원<select id="study-unit-select" aria-label="함께 공부할 단원"></select></label>
+            <section class="learning-profile-card"><div><p class="section-caption">내 학습에 맞춘 설명</p><p id="learning-mode-summary" aria-live="polite">아직 함께 알아가는 중이에요. 기록이 적은 개념은 그림과 세로셈부터 보여줄게요.</p></div><div class="learning-skill-list" id="learning-skill-list" aria-label="개념별 학습 상태"></div></section>
+             <div class="mode-section" id="modes"><p class="section-caption">지금 받고 싶은 도움을 골라요</p><div class="mode-list" role="group" aria-label="도움 방식 선택"><button class="mode-card selected" data-mode="concept" aria-pressed="true" type="button">쉽게 설명</button><button class="mode-card" data-mode="stuck" aria-pressed="false" type="button">힌트 하나</button><button class="mode-card" data-mode="check" aria-pressed="false" type="button">내 풀이 확인</button></div></div>
+            <section class="teach-entry-card" id="teach-entry-card" aria-labelledby="teach-entry-title">
+              <div class="teach-entry-main"><span class="teach-entry-mark" aria-hidden="true">콩</span><div><p class="section-caption">조금 더 깊이 배우고 싶다면</p><h2 id="teach-entry-title">콩이에게 가르치기</h2><p class="teach-entry-copy">이번에는 학생이 선생님! 네 풀이를 설명하면 콩이가 듣고 생각을 이어주는 질문을 해요.</p></div><button class="teach-mode-toggle" id="teach-mode-toggle" type="button" aria-pressed="false">설명 시작</button></div>
+              <div class="teach-mode-steps" id="teach-mode-steps" hidden><div><b>1</b><span>네가 먼저 풀이 설명</span></div><div><b>2</b><span>콩이가 질문으로 확인</span></div><div><b>3</b><span>함께 빠진 생각 찾기</span></div><p>정답부터 말하지 않아요. “내가 이렇게 생각했어” 하고 편하게 시작해 봐요.</p><button class="teach-mode-exit" id="teach-mode-exit" type="button">다른 도움 방식 고르기</button></div>
+            </section>
+             <section class="tutor-mode-brief" id="tutor-mode-brief" data-mode="concept" aria-live="polite"><div class="tutor-mode-symbol" id="tutor-mode-symbol" aria-hidden="true">개념</div><div class="tutor-mode-brief-copy"><p id="tutor-mode-label">쉽게 설명 모드</p><h2 id="tutor-mode-title">개념을 쉽게 풀어봐요</h2><p id="tutor-mode-description">콩이가 쉬운 말과 그림으로 차근차근 설명해요.</p><div class="tutor-mode-steps" id="tutor-mode-steps"></div></div></section>
+            <section class="chat-panel together-chat-panel" aria-label="콩이와 자유롭게 수학 공부하기"><div class="chat-topline"><div class="tutor-identity"><span class="tutor-avatar" aria-hidden="true">콩</span><span><strong>콩이</strong><small id="tutor-unit-label">4학년 2학기 수학 공부 친구</small></span></div><button class="clear-button" id="new-chat" type="button">새 대화</button></div><div class="chat-messages" id="chat-messages" aria-live="polite" aria-label="콩이와 나눈 대화"><article class="message tutor-message"><span class="message-avatar" aria-hidden="true">콩</span><div class="message-body"><div class="message-meta">콩이</div><div class="bubble" id="tutor-welcome">이번 단원에서 궁금한 걸 물어봐요. 처음에는 그림과 예시로 차근차근 설명할게요.</div></div></article><div class="quick-prompts" id="quick-prompts"><span>어디서 시작할지 모르겠다면 하나 골라요</span></div></div><form class="composer" id="question-form"><label class="sr-only" for="question-input">콩이에게 수학 질문하기</label><textarea id="question-input" rows="1" placeholder="궁금한 점이나 계산식을 적어봐요..." maxlength="500" required></textarea><div class="fraction-question-tools"><button class="fraction-toggle" id="toggle-fraction-builder" type="button" aria-expanded="false" aria-controls="fraction-builder">분수 틀 넣기</button><div class="fraction-builder" id="fraction-builder" hidden><p>위 칸에 분자, 아래 칸에 분모를 적어요.</p><div class="fraction-builder-row"><div class="fraction-input-stack" role="group" aria-label="분수 입력 틀"><input id="fraction-numerator" type="number" min="1" max="999" step="1" inputmode="numeric" aria-label="분자, 위 숫자" placeholder="분자"><input id="fraction-denominator" type="number" min="1" max="999" step="1" inputmode="numeric" aria-label="분모, 아래 숫자" placeholder="분모"></div><button class="fraction-add-button" id="add-question-fraction" type="button">질문에 추가</button></div><p class="fraction-builder-message" id="fraction-builder-message" role="status" aria-live="polite"></p></div><div class="question-fractions" id="question-fractions" hidden><span>질문에 넣은 분수</span><div id="question-fraction-items"></div></div></div><div class="composer-footer"><span class="composer-hint">한 단어 또는 계산식만 적어도 괜찮아요</span><span class="composer-actions"><span class="char-count" id="char-count">0 / 500</span><button class="send-button" type="submit" aria-label="질문 보내기">→</button></span></div></form></section>
+          </section>
+
+          <section class="student-view feature-view" id="battle-view" hidden>
+            <div class="feature-heading"><p class="eyebrow">콩이와 한 판</p><h1>누가 먼저 풀까?</h1><p class="heading-subtitle">같은 문제를 풀어요. 내가 먼저 답을 보내면 이겨요.</p></div>
+            <section class="battle-card" aria-label="콩이 AI와 계산 대결">
+              <div class="battle-level"><span id="battle-unit-label">선택한 단원 문제</span><label class="battle-unit-picker">단원<select id="battle-unit-select" aria-label="AI 대결 단원"></select></label><strong id="battle-progress-label">0 / 0문제</strong></div>
+              <p class="battle-instructions">문제마다 한 번만 답할 수 있어요. 틀리면 바로 정답을 보여주고 다음 문제로 넘어가요.</p>
+              <div class="battle-complete" id="battle-complete" hidden role="status"><strong>모든 도전 문제를 해결했어요!</strong><span>이 단원 문제는 모두 풀었어요. 다른 단원을 골라 도전해 보세요.</span></div>
+              <button class="battle-start" id="battle-start" type="button">대결 시작</button>
+              <div class="battle-round" id="battle-round" hidden>
+                <div class="battle-racers"><span>나</span><span class="versus">VS</span><span>콩이 AI</span></div>
+                <h2 class="battle-problem" id="battle-problem">문제를 준비하고 있어요.</h2>
+                <div class="battle-visual" id="battle-visual"></div>
+                <div class="battle-clock-row"><span id="student-time">내 시간 0초</span><span id="ai-time">콩이 준비 중</span></div>
+                <div class="battle-track" aria-label="콩이의 풀이 시간"><span id="battle-progress"></span></div>
+                <div class="battle-options" id="battle-options" role="group" aria-label="답 고르기" hidden></div>
+                <form class="battle-form" id="battle-form"><label class="sr-only" for="battle-answer">내 답</label><input id="battle-answer" type="text" autocomplete="off" placeholder="답을 쓰거나 위에서 골라요" required /><button type="submit">답 보내기</button></form>
+                <p class="battle-feedback" id="battle-feedback" role="status" aria-live="polite"></p>
+                <button class="battle-again" id="battle-again" type="button" hidden>다음 문제</button>
+              </div>
+            </section>
+            <p class="feature-note">콩이 AI는 브라우저 안에서 계산하는 체험용 상대예요.</p>
+          </section>
+
+          <section class="student-view feature-view geometry-view" id="geometry-view" hidden>
+            <div class="feature-heading geometry-heading"><p class="eyebrow">직접 움직이며 살펴보는</p><h1>도형 놀이터</h1><p class="heading-subtitle" id="geometry-grade-description">도형의 변과 꼭짓점을 살펴보고, 원과 입체도 직접 만들어 봐요.</p></div>
+            <div class="geometry-course-note"><span class="geometry-course-dot" aria-hidden="true"></span><span id="geometry-course-note">4학년 2학기 · 삼각형, 사각형, 다각형 단원과 연결돼요.</span></div>
+            <div class="geometry-mode-row">
+              <div class="geometry-mode-switch" role="group" aria-label="도형 보기 방식">
+                <button type="button" data-geometry-mode="2d" aria-pressed="true">2D 평면도형</button>
+                <button type="button" data-geometry-mode="3d" aria-pressed="false">3D 입체 탐험</button>
+              </div>
+              <span class="geometry-preview-tag" id="geometry-preview-tag" hidden>미리 보기 활동</span>
+            </div>
+            <div class="geometry-tool-list" id="geometry-tool-list" role="group" aria-label="실험할 도형"></div>
+            <div class="geometry-workspace">
+              <section class="geometry-stage-card" aria-labelledby="geometry-stage-title">
+                <div class="geometry-stage-heading"><div><p class="section-caption" id="geometry-stage-kind">2D 실험</p><h2 id="geometry-stage-title">정다각형</h2></div><span class="geometry-live-badge">직접 바꿔 보세요</span></div>
+                <div class="geometry-stage" id="geometry-stage" aria-live="polite"></div>
+                <div class="geometry-readouts" id="geometry-readouts" aria-label="도형 정보"></div>
+                <p class="geometry-stage-caption" id="geometry-stage-caption"></p>
+              </section>
+              <aside class="geometry-control-card" aria-labelledby="geometry-controls-title">
+                <div><p class="section-caption">조작 도구</p><h2 id="geometry-controls-title">무엇을 바꿔 볼까요?</h2></div>
+                <div class="geometry-controls" id="geometry-controls"></div>
+              </aside>
+            </div>
+            <p class="geometry-safety-note">직접 조작하는 그림 실험이에요. 수치를 바꾸고, 모양과 보이는 방향이 어떻게 달라지는지 살펴봐요.</p>
+          </section>
+
+          <section class="student-view feature-view machine-lab-view" id="machine-lab-view" hidden>
+            <div class="feature-heading"><p class="eyebrow">중력과 움직임을 실험해요</p><h1>움직이는 장치 제작소</h1><p class="heading-subtitle">경사로와 블록, 회전판을 놓아 구슬을 목적지까지 보내는 장치를 만들어요.</p></div>
+            <section class="machine-lab-lock" id="machine-lab-lock-panel" role="status" hidden><span class="machine-lock-icon" aria-hidden="true">Ⅱ</span><h2>선생님이 열어주면 시작할 수 있어요</h2><p id="machine-lab-lock-message">이 활동은 담당 선생님이 학급에 열어준 뒤 이용할 수 있어요.</p><button class="geometry-secondary-button" id="machine-lab-refresh-access" type="button">권한 다시 확인</button></section>
+            <div id="machine-lab-workspace" hidden>
+              <div class="machine-lab-intro"><span class="machine-law-chip">3D 공간</span><span class="machine-law-chip">중력 9.81m/s² ↓</span><span class="machine-law-chip">바닥 한 칸 0.3m</span><span class="machine-law-chip">경사로·지렛대·회전판</span><span class="machine-law-chip">실시간 충돌</span><p>3D 장치판을 드래그해 돌려 보고, 스크롤이나 두 손가락으로 확대·축소해요. 부품을 선택한 뒤 판 위에 놓고, 앞·뒤·좌·우로 끌어 이동해요. 물리는 학습용으로 단순화한 3D 모형이에요.</p></div>
+              <div class="machine-layout">
+                <section class="machine-board-card" aria-labelledby="machine-board-title">
+                  <div class="machine-board-header"><div><p class="section-caption">내 3D 장치</p><h2 id="machine-board-title">새로운 굴림길</h2></div><div class="machine-board-header-actions"><span class="machine-physics-badge">3D 중력·충돌</span><button class="machine-camera-reset" id="machine-camera-reset" type="button">화면 맞추기</button></div></div>
+                  <label class="machine-title-label">장치 이름<input id="machine-title" type="text" maxlength="40" value="나의 굴림길" /></label>
+                  <div class="machine-palette" role="group" aria-label="3D 장치 부품 고르기"><button type="button" data-machine-part="ramp" aria-pressed="true">경사로</button><button type="button" data-machine-part="block" aria-pressed="false">블록</button><button type="button" data-machine-part="turntable" aria-pressed="false">회전판</button><button type="button" data-machine-part="lever" aria-pressed="false">지렛대</button><button type="button" data-machine-part="select" aria-pressed="false">선택·이동</button></div>
+                  <div class="machine-board-tools"><label>설치 높이 <strong id="machine-placement-height-label">0.8m</strong><input id="machine-placement-height" type="range" min="0" max="2.6" step="0.1" value="0.8" aria-label="새 부품을 놓을 높이"></label><span>빈 판 드래그: 카메라 회전 · 부품 드래그: 공간 이동</span></div>
+                  <p class="machine-board-hint" id="machine-board-hint">경사로를 골랐어요. 바닥을 눌러 설치하고, 드래그해 3D 공간에서 옮겨 보세요.</p>
+                  <div class="machine-canvas-wrap"><div id="machine-canvas" role="application" aria-label="실제 3D 구슬 장치 판. 드래그하면 카메라가 회전하고, 휠이나 두 손가락으로 확대해요. 부품을 선택하면 3차원 위치로 옮길 수 있어요."><p class="machine-webgl-fallback">3D 화면을 준비하는 중이에요.</p></div></div>
+                  <div class="machine-run-controls"><button class="machine-run-button" id="machine-run" type="button">구슬 출발!</button><button class="machine-reset-button" id="machine-reset" type="button">위치 초기화</button><button class="machine-clear-button" id="machine-clear" type="button">부품 모두 비우기</button></div>
+                  <p class="machine-run-status" id="machine-run-status" role="status" aria-live="polite">경사로와 블록을 배치해 구슬 길을 만들어 보세요.</p>
+                </section>
+                <aside class="machine-settings-card">
+                  <p class="section-caption">선택한 부품</p><h2 id="machine-selected-name">경사로를 놓아 보세요</h2>
+                  <div id="machine-piece-settings" class="machine-piece-settings"><p>판 위에 있는 부품을 눌러 선택하면 각도와 속도를 바꿀 수 있어요.</p></div>
+                  <div class="machine-share-box"><p class="section-caption">친구에게 장치 공유</p><p>공유 링크를 받은 친구는 같은 장치를 열어 다시 실험할 수 있어요. 친구 학급에서도 선생님이 제작소를 열어주셔야 해요.</p><button id="machine-share" type="button">공유 링크 복사</button><input id="machine-share-url" type="text" readonly aria-label="공유 링크" hidden /></div>
+                  <div class="machine-science-note"><strong>움직임 힌트</strong><span>구슬은 아래쪽으로 끌리는 중력의 영향을 받아요. 경사로는 구슬을 굴리고, 지렛대는 받침점에서 먼 곳을 누를수록 더 크게 기울어요. 회전판은 닿은 구슬에 회전 방향의 힘을 전달해요.</span></div>
+                </aside>
+              </div>
+            </div>
+            <div id="machine-share-import-notice" class="machine-share-import-notice" hidden role="status">친구가 공유한 장치를 불러왔어요. 내 방식으로 바꾸어 실험해 보세요.</div>
+          </section>
+        </main>
+        <dialog class="notebook-drawer" id="notebook-drawer" aria-labelledby="notebook-title">
+          <div class="notebook-sheet">
+            <header class="notebook-drawer-head"><div><p class="eyebrow">필요할 때 펼쳐 쓰는</p><h2 id="notebook-title">콩이 공책</h2></div><button id="close-notebook" type="button">접기</button></header>
+            <div class="notebook-equation"><span>지금 푸는 문제</span><strong id="notebook-current-problem">2/7 + 3/7 = ?</strong><button id="write-problem" type="button">문제 쓰기</button></div>
+            <div class="notebook-tools"><span><i class="bean-seed soybean" aria-hidden="true"></i> 손가락이나 스마트펜으로 쓰기</span><button id="undo-ink" type="button">되돌리기</button><button id="clear-ink" type="button">모두 지우기</button></div>
+            <div class="paper-wrap"><canvas id="notebook-canvas" width="1200" height="480" aria-label="손가락이나 스마트펜으로 계산을 쓰는 공책">이 브라우저에서는 공책을 사용할 수 없어요.</canvas></div>
+            <p class="notebook-status" id="notebook-status" aria-live="polite">여기에 직접 계산해 보세요.</p>
+            <p class="feature-note">필기는 이 화면에서만 사용돼요. 글씨를 자동으로 읽지는 않아요.</p>
+          </div>
+        </dialog>
+      </section>
+
+      <section class="role-screen teacher-app" id="teacher-dashboard" hidden>
+        <header class="app-topbar"><a class="brand" href="#teacher-dashboard" aria-label="교사 대시보드"><span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 40 40" fill="none"><rect x="2" y="2" width="36" height="36" rx="13" fill="currentColor"/><path d="M12 13h16M20 11v18M13 27l14-14" stroke="#fff" stroke-width="2.7" stroke-linecap="round"/></svg></span><span class="brand-copy"><strong>콩셈콩셈</strong><small class="brand-slogan">콩콩팥팥, 내가 열심히 한 만큼</small></span></a><span class="grade-badge" id="teacher-dashboard-grade-badge">4학년 2학기</span><span class="teacher-session-label" id="teacher-session-label"></span><button class="teacher-password-open" id="open-teacher-password" type="button">비밀번호 변경</button><button class="role-switch" data-back-login type="button">나가기</button></header>
+        <main class="dashboard-main">
+          <div class="dashboard-heading"><div><p class="eyebrow">교사용 대시보드</p><h1>우리 반 학습 한눈에 보기</h1><p><span id="teacher-class-label">4학년 1반</span> · 실시간 기록</p></div><span class="bean-pair dashboard-beans" aria-hidden="true"><i class="bean-seed soybean"></i><i class="bean-seed adzuki"></i></span><span class="sample-badge">학생별 실제 기록</span></div>
+          <p class="sample-notice" id="teacher-progress-notice">개념별 정답률, 시도 횟수, 힌트 사용, 오늘의 배움 진도를 학생별 기록에서 계산해 보여줘요. 기록이 적은 학생은 수준을 단정하지 않고 ‘기록 쌓는 중’으로 표시해요.</p>
+           <div class="teacher-stats"><article><span>접속 중 학생</span><strong id="teacher-active-count">0명</strong></article><article><span>학습 기록</span><strong id="teacher-question-count">0개</strong></article><article><span>교사 확인 알림</span><strong id="teacher-flagged-count">0건</strong></article></div>
+            <section class="teacher-panel teaching-pace-panel"><div><p class="section-caption">수업 진도 설정</p><h2>한 번의 수업에서 진행할 미션 수</h2><p>한 교시에 두 차시를 다루면 2개로 설정하세요. 이미 진행 중인 묶음은 마친 뒤, 다음 수업 묶음부터 새 설정을 적용합니다.</p><p class="teaching-pace-status" id="teaching-pace-status" role="status" aria-live="polite">수업 진도 설정을 확인하고 있어요.</p></div><div class="teaching-pace-controls"><label class="sr-only" for="teaching-pace-select">수업당 미션 개수</label><select id="teaching-pace-select"><option value="1">한 번에 1개</option><option value="2">한 번에 2개</option><option value="3">한 번에 3개</option><option value="4">한 번에 4개</option></select><button type="button" id="save-teaching-pace">수업 설정 저장</button><button class="teaching-pace-setup-help" id="teaching-pace-setup-help" type="button" hidden>최신 SQL 열기</button></div></section>
+            <section class="teacher-panel machine-unlock-panel"><div><p class="section-caption">선택형 학생 활동</p><h2>움직이는 장치 제작소</h2><p id="machine-lab-teacher-status" role="status" aria-live="polite">현재 이 학급 학생에게는 잠겨 있어요.</p><small>열면 담당 학급 학생이 구슬 장치를 만들고 친구와 공유할 수 있습니다.</small><button class="machine-lab-setup-help" id="machine-lab-setup-help" type="button" hidden>Supabase 설정 SQL 열기</button></div><button class="machine-unlock-button" id="machine-lab-toggle" type="button" aria-pressed="false">학급에 열기</button></section>
+            <section class="teacher-panel machine-unlock-panel"><div><p class="section-caption">선택형 학생 활동</p><h2>움직이는 장치 제작소</h2><p id="machine-lab-teacher-status" role="status" aria-live="polite">현재 이 학급 학생에게는 잠겨 있어요.</p><small>열면 담당 학급 학생이 구슬 장치를 만들고 친구와 공유할 수 있습니다.</small><button class="machine-lab-setup-help" id="machine-lab-setup-help" type="button" hidden>Supabase 설정 SQL 열기</button></div><button class="machine-unlock-button" id="machine-lab-toggle" type="button" aria-pressed="false">학급에 열기</button></section>
+           <div class="dashboard-grid">
+            <section class="teacher-panel concept-panel"><h2>우리 반 개념별 이해도</h2><p>시도 횟수가 있는 풀이의 정답률과 학생별 개념 상태를 모아봐요.</p><div class="teacher-skill-summary" id="teacher-skill-summary"><p class="teacher-empty">학습 기록을 불러오는 중이에요.</p></div></section>
+            <section class="teacher-panel support-panel"><h2>학생별 학습 수준</h2><p>학생을 누르면 단원별 정답률·힌트·오늘의 배움 진도를 확인할 수 있어요.</p><div class="filter-buttons" role="group" aria-label="학생 학습 수준 필터"><button class="teacher-filter active" data-student-filter="all" type="button">전체</button><button class="teacher-filter" data-student-filter="support" type="button">도움 필요</button><button class="teacher-filter" data-student-filter="practice" type="button">연습 중</button><button class="teacher-filter" data-student-filter="secure" type="button">익숙해요</button><button class="teacher-filter" data-student-filter="unknown" type="button">기록 쌓는 중</button></div><div class="teacher-student-list" id="teacher-student-list"><p class="teacher-empty">학생별 학습 기록을 불러오는 중이에요.</p></div></section>
+          </div>
+          <section class="teacher-panel roster-panel"><div><h2>학생 비밀번호·로그인 관리</h2><p>아직 계정이 없는 학생에게 첫 로그인 코드를 발급하거나, 이미 계정이 있는 학생의 비밀번호를 초기화할 수 있어요. 코드는 학생에게만 개별 전달해 주세요.</p></div>
+            <form id="student-roster-import-form" class="roster-import-form"><label>Excel에서 저장한 CSV·TSV 명단<input id="roster-file" type="file" accept=".csv,.tsv,.txt,text/csv,text/tab-separated-values" required /></label><div class="roster-import-actions"><button id="download-roster-template" type="button" class="roster-secondary-button">엑셀 양식 다운로드</button><button type="submit">명단 등록하고 코드 발급</button></div><small>첫 줄에 ‘번호’, ‘이름’ 열을 넣어 주세요. Excel에서 CSV UTF-8로 저장할 수 있어요.</small></form>
+            <div class="single-roster-details"><h3>학생 비밀번호 초기화</h3><p>학생의 번호와 학교에 등록된 이름을 입력하면 새 초기화 코드가 발급돼요. 학생은 그 코드로 새 비밀번호를 만들 수 있어요.</p><form id="student-roster-form" class="roster-form"><label>학생 번호<input id="roster-student-number" type="number" min="1" max="50" placeholder="예: 12" required /></label><label>학교에 등록된 이름<input id="roster-student-name" type="text" minlength="2" maxlength="30" placeholder="예: 김민준" required /></label><button type="submit">초기화 코드 발급</button></form></div>
+            <p class="roster-error" id="roster-error" role="alert" hidden></p><div class="roster-code-result" id="roster-code-result" hidden><p id="roster-code-message">학생에게 전달할 1회 코드</p><div class="issued-code-list" id="issued-code-list"></div><div class="roster-code-actions"><button id="download-roster-codes" type="button">코드표 다운로드</button><button id="print-roster-codes" type="button">코드 카드 인쇄</button></div><small>코드는 24시간 동안 한 번만 쓸 수 있고, 화면을 닫으면 다시 볼 수 없어요. 코드표는 공개하지 말고 학생별로 전달해 주세요.</small></div><div class="teacher-roster-list" id="teacher-roster-list"><p class="teacher-empty">등록한 학생이 여기에 보여요.</p></div>
+          </section>
+          <div class="teacher-live-grid">
+            <section class="teacher-panel live-panel"><div class="live-panel-heading"><h2>지금 학습 중</h2><span class="live-indicator"><i></i> Supabase 실시간</span></div><div id="teacher-active-list" class="teacher-active-list"><p class="teacher-empty">아직 활동 중인 학생이 없어요.</p></div></section>
+            <section class="teacher-panel alert-panel" id="teacher-alert-panel" hidden><div class="live-panel-heading"><h2>교사 확인 알림</h2><span class="alert-count" id="teacher-alert-count">0</span></div><p>수학과 무관하거나 부적절한 대화가 감지됐어요.</p><div id="teacher-alert-list" class="teacher-alert-list"></div></section>
+          </div>
+          <section class="teacher-panel conversation-panel"><div class="live-panel-heading"><h2>학생과 콩이의 최근 대화</h2><span class="live-indicator">학생별 최신 대화</span></div><p class="conversation-list-note">최근 대화한 학생부터 한 명씩 보여요. 학생을 누르면 최근 대화 최대 10개가 나타나요.</p><div id="teacher-conversation-log" class="teacher-conversation-log"><p class="teacher-empty">아직 표시할 대화가 없어요.</p></div></section>
+        </main>
+      </section>
+
+      <div class="toast" id="toast" role="status" aria-live="polite"></div>
+      <dialog class="teacher-password-dialog" id="teacher-password-dialog" aria-labelledby="teacher-password-title">
+        <button class="dialog-close" id="close-teacher-password" type="button" aria-label="닫기">×</button>
+        <p class="eyebrow">교사 계정</p><h2 id="teacher-password-title">비밀번호 변경</h2>
+        <p class="teacher-password-intro">현재 비밀번호로 본인을 확인한 다음 새 비밀번호를 저장해요. 새 비밀번호는 8~16자이며 영문자·숫자·특수문자를 각각 하나 이상 넣어주세요.</p>
+        <form id="teacher-password-form" class="teacher-password-form">
+          <label>현재 비밀번호<input id="teacher-current-password" type="password" autocomplete="current-password" required /></label>
+          <label>새 비밀번호<input id="teacher-new-password" type="password" autocomplete="new-password" minlength="8" maxlength="16" required /></label>
+          <label>새 비밀번호 확인<input id="teacher-new-password-confirm" type="password" autocomplete="new-password" minlength="8" maxlength="16" required /></label>
+          <p class="teacher-password-message" id="teacher-password-message" role="status" aria-live="polite" hidden></p>
+          <div class="teacher-password-actions"><button class="teacher-password-cancel" id="cancel-teacher-password" type="button">취소</button><button class="teacher-password-submit" type="submit">비밀번호 저장</button></div>
+        </form>
+      </dialog>
+      <dialog class="setup-dialog" id="supabase-setup-dialog" aria-labelledby="setup-title">
+        <button class="dialog-close" id="close-supabase-setup" aria-label="닫기">×</button>
+        <p class="eyebrow">관리자 설정</p><h2 id="setup-title">Supabase 준비하기</h2>
+        <ol class="setup-steps"><li>Supabase 프로젝트의 SQL Editor를 열어요.</li><li>아래 최신 설정 SQL을 복사해 붙여넣고 Run을 눌러요.</li><li>Authentication &gt; Users에서 교사 계정만 만들고 이메일을 확인해요. 교사 이메일은 <code>teacher-학년-반@kongsem.invalid</code> 형식이에요.</li><li>교사 UUID를 프로필 예시에 연결해요. 학생은 교사가 명단 등록 후 발급하는 1회 코드로 첫 비밀번호를 만들어요.</li></ol>
+        <div class="setup-sql-actions"><button class="setup-copy-button" id="copy-supabase-sql" type="button">전체 SQL 복사</button><button class="setup-copy-button setup-select-button" id="select-supabase-sql" type="button">복사 안 되면 전체 선택</button></div>
+        <p class="setup-status" id="supabase-setup-status" role="status" aria-live="polite">SQL을 불러올게요.</p>
+        <label class="sr-only" for="supabase-schema-output">Supabase 데이터베이스 설정 SQL</label><textarea class="setup-code" id="supabase-schema-output" readonly spellcheck="false" placeholder="SQL을 불러오는 중..."></textarea>
+        <details class="setup-examples"><summary>교사 계정을 profiles에 연결하는 예시</summary><p>교사 UUID와 이름, 학년·반을 실제 계정 정보로 바꿔 실행하세요. 3·4·5·6학년은 grade에 각각 3·4·5·6을 적어요. 기존 학생 Auth 계정을 연결해야 할 때만 학생 예시를 사용하세요.</p><h3>기존 학생 계정 예시</h3><pre id="student-profile-sql">insert into public.profiles
+  (id, role, grade, class_number, student_number, display_name)
+values
+  ('학생 Auth UUID', 'student', 4, 1, 12, '김민준');</pre><button class="setup-copy-button secondary-copy" id="copy-student-profile" type="button">학생 예시 복사</button><h3>교사 예시</h3><pre id="teacher-profile-sql">insert into public.profiles
+  (id, role, grade, class_number, student_number, display_name)
+values
+  ('교사 Auth UUID', 'teacher', 4, 1, null, '김선생님');</pre><button class="setup-copy-button secondary-copy" id="copy-teacher-profile" type="button">교사 예시 복사</button></details>
+        <p class="setup-security-note">일반적인 학생 계정은 첫 로그인 때 자동으로 만들어져요. `service_role` 키는 SQL이나 브라우저에 넣지 말고 서버에서만 사용하세요.</p>
+      </dialog>
+      <dialog class="help-dialog" id="help-dialog"><button class="dialog-close" id="close-help" aria-label="닫기">×</button><p class="eyebrow">사용 방법</p><h2>어렵게 생각 말고,<br />하나만 골라봐요.</h2><ol><li><span>1</span><div><strong>오늘의 배움 문제에 답해요</strong><small>정답만이 아니라 다시 생각한 과정도 배움의 흔적이에요.</small></div></li><li><span>2</span><div><strong>틀리면 콩이와 다른 방법으로 다시 봐요</strong><small>그림, 자릿값 표, 세로셈으로 다시 설명하고 새 문제를 줘요.</small></div></li><li><span>3</span><div><strong>콩이에게 가르치거나 도전해요</strong><small>익숙해진 개념은 콩이에게 설명하며 더 깊게 살펴볼 수 있어요.</small></div></li></ol><p class="dialog-footnote">학생 대화 기록은 Supabase 학급 정책에 따라 담당 교사에게 공유돼요. 비밀번호는 앱에서 저장하지 않아요.</p></dialog>
+    </div>
+  </body>
+</html>
