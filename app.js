@@ -1289,19 +1289,38 @@ function geometryConstrainedPoints(model) {
   if (!model) return null;
   const template = geometryShapeTemplates[model.kind];
   if (!template) return null;
+  geometryFitConstrainedModel(model);
   const angle = model.rotation;
   const cosine = Math.cos(angle);
   const sine = Math.sin(angle);
-  return template.map(([x, y]) => [
-    Math.max(16, Math.min(304, Math.round(model.center[0] + (x * cosine - y * sine) * model.size))),
-    Math.max(16, Math.min(236, Math.round(model.center[1] + (x * sine + y * cosine) * model.size))),
-  ]);
+  return template.map(([x, y]) => [Math.round(model.center[0] + (x * cosine - y * sine) * model.size), Math.round(model.center[1] + (x * sine + y * cosine) * model.size)]);
+}
+
+function geometryConstrainedBounds(model) {
+  const template = geometryShapeTemplates[model.kind];
+  const cosine = Math.cos(model.rotation);
+  const sine = Math.sin(model.rotation);
+  const rotated = template.map(([x, y]) => [x * cosine - y * sine, x * sine + y * cosine]);
+  return {
+    x: Math.max(...rotated.map(([x]) => Math.abs(x))),
+    y: Math.max(...rotated.map(([, y]) => Math.abs(y))),
+  };
+}
+
+function geometryFitConstrainedModel(model) {
+  const bounds = geometryConstrainedBounds(model);
+  const maxSize = Math.min((304 - 16) / (2 * bounds.x), (236 - 16) / (2 * bounds.y));
+  model.size = Math.min(model.size, maxSize);
+  model.center = [
+    Math.max(16 + bounds.x * model.size, Math.min(304 - bounds.x * model.size, model.center[0])),
+    Math.max(16 + bounds.y * model.size, Math.min(236 - bounds.y * model.size, model.center[1])),
+  ];
 }
 
 function geometryMakePreset(kind) {
   const tool = kind === 'square' ? 'quadrilaterals' : 'triangles';
   geometryState.tool = tool;
-  geometryState.constrainedShapes[tool] = { kind, center: [160, 126], size: kind === 'square' ? 58 : 76, rotation: 0 };
+  geometryState.constrainedShapes[tool] = { kind, center: [160, 126], size: kind === 'square' ? 90 : 104, rotation: 0 };
   geometryState.drawings[tool] = geometryConstrainedPoints(geometryState.constrainedShapes[tool]);
   geometryState.drawingComplete = true;
   renderGeometryLab();
@@ -1322,8 +1341,9 @@ function geometryMoveConstrainedPoint(tool, index, point, origin) {
     const dy = point[1] - model.center[1];
     const baseAngle = Math.atan2(base[1], base[0]);
     model.rotation = Math.atan2(dy, dx) - baseAngle;
-    model.size = Math.max(24, Math.min(112, Math.hypot(dx, dy) / Math.hypot(base[0], base[1])));
+    model.size = Math.max(28, Math.hypot(dx, dy) / Math.hypot(base[0], base[1]));
   }
+  geometryFitConstrainedModel(model);
   geometryState.drawings[tool] = geometryConstrainedPoints(model);
 }
 
