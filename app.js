@@ -141,8 +141,10 @@ const geometryState = {
     congruence: [[48, 126], [112, 62], [126, 190]],
     symmetry: [[160, 45], [238, 100], [208, 190], [112, 190], [82, 100]],
   },
+  constrainedShapes: { triangles: null, quadrilaterals: null },
   drawingComplete: true,
   activeDragPoint: null,
+  dragOrigin: null,
 };
 const geometryShapeLabels = { triangle: '정삼각형', square: '정사각형', rectangle: '직사각형', pentagon: '정오각형' };
 const geometrySolidLabels = { prism: '직육면체', cylinder: '원기둥', cone: '원뿔', sphere: '구' };
@@ -1091,7 +1093,36 @@ function geometryInteractiveSvg(tool) {
     const fill = tool === 'symmetry' ? '#dce9ce' : '#e6efd9';
     const axis = tool === 'symmetry' ? '<path d="M160 28V224" class="geometry-axis-line"/>' : '';
     const shape = geometryState.drawingComplete ? `<polygon points="${pointString}" fill="${fill}" class="geometry-editable-shape"/>` : `<polyline points="${pointString}" class="geometry-editable-line"/>`;
-    artwork = `${shape}${axis}${handles}`;
+    const constrained = geometryState.constrainedShapes[tool];
+    let marks = '';
+    if (constrained?.kind === 'equilateral' || constrained?.kind === 'square') {
+      marks = points.map((point, index) => {
+        const next = points[(index + 1) % points.length];
+        const dx = next[0] - point[0];
+        const dy = next[1] - point[1];
+        const length = Math.hypot(dx, dy) || 1;
+        const mx = (point[0] + next[0]) / 2;
+        const my = (point[1] + next[1]) / 2;
+        const nx = -dy / length * 6;
+        const ny = dx / length * 6;
+        return `<path d="M${mx - nx} ${my - ny}L${mx + nx} ${my + ny}" class="geometry-side-mark"/>`;
+      }).join('');
+    }
+    if (constrained?.kind === 'rightTriangle' || constrained?.kind === 'square') {
+      const rightVertices = constrained.kind === 'rightTriangle' ? [0] : [0, 1, 2, 3];
+      marks += rightVertices.map((index) => {
+        const vertex = points[index];
+        const before = points[(index - 1 + points.length) % points.length];
+        const after = points[(index + 1) % points.length];
+        const u = [before[0] - vertex[0], before[1] - vertex[1]];
+        const v = [after[0] - vertex[0], after[1] - vertex[1]];
+        const ul = Math.hypot(...u) || 1;
+        const vl = Math.hypot(...v) || 1;
+        const size = 11;
+        return `<path d="M${vertex[0] + u[0] / ul * size} ${vertex[1] + u[1] / ul * size}L${vertex[0] + u[0] / ul * size + v[0] / vl * size} ${vertex[1] + u[1] / ul * size + v[1] / vl * size}L${vertex[0] + v[0] / vl * size} ${vertex[1] + v[1] / vl * size}" class="geometry-right-angle-mark"/>`;
+      }).join('');
+    }
+    artwork = `${shape}${marks}${axis}${handles}`;
   } else if (tool === 'congruence' && points.length >= 3) {
     const shifted = points.map(([x, y]) => `${x + 145},${y}`).join(' ');
     const shape = geometryState.drawingComplete ? `<polygon points="${pointString}" class="geometry-congruence-first"/><polygon points="${shifted}" class="geometry-congruence-second"/>` : `<polyline points="${pointString}" class="geometry-congruence-first geometry-editable-line"/><polyline points="${shifted}" class="geometry-congruence-second geometry-editable-line"/>`;
@@ -1248,6 +1279,54 @@ function geometryPolygonName(points, grade = activeGrade) {
   return allEqual ? `정${points.length}각형에 가까워요` : `${points.length}각형`;
 }
 
+const geometryShapeTemplates = {
+  equilateral: [[0, -1], [Math.sqrt(3) / 2, 0.5], [-Math.sqrt(3) / 2, 0.5]],
+  rightTriangle: [[-1 / 3, 1 / 3], [2 / 3, 1 / 3], [-1 / 3, -2 / 3]],
+  square: [[-1, -1], [1, -1], [1, 1], [-1, 1]],
+};
+
+function geometryConstrainedPoints(model) {
+  if (!model) return null;
+  const template = geometryShapeTemplates[model.kind];
+  if (!template) return null;
+  const angle = model.rotation;
+  const cosine = Math.cos(angle);
+  const sine = Math.sin(angle);
+  return template.map(([x, y]) => [
+    Math.max(16, Math.min(304, Math.round(model.center[0] + (x * cosine - y * sine) * model.size))),
+    Math.max(16, Math.min(236, Math.round(model.center[1] + (x * sine + y * cosine) * model.size))),
+  ]);
+}
+
+function geometryMakePreset(kind) {
+  const tool = kind === 'square' ? 'quadrilaterals' : 'triangles';
+  geometryState.tool = tool;
+  geometryState.constrainedShapes[tool] = { kind, center: [160, 126], size: kind === 'square' ? 58 : 76, rotation: 0 };
+  geometryState.drawings[tool] = geometryConstrainedPoints(geometryState.constrainedShapes[tool]);
+  geometryState.drawingComplete = true;
+  renderGeometryLab();
+}
+
+function geometryMoveConstrainedPoint(tool, index, point, origin) {
+  const model = geometryState.constrainedShapes[tool];
+  if (!model || !origin) return;
+  if (index === 0) {
+    model.center = [
+      Math.max(32, Math.min(288, origin.center[0] + point[0] - origin.point[0])),
+      Math.max(32, Math.min(220, origin.center[1] + point[1] - origin.point[1])),
+    ];
+  } else {
+    const template = geometryShapeTemplates[model.kind];
+    const base = template[index];
+    const dx = point[0] - model.center[0];
+    const dy = point[1] - model.center[1];
+    const baseAngle = Math.atan2(base[1], base[0]);
+    model.rotation = Math.atan2(dy, dx) - baseAngle;
+    model.size = Math.max(24, Math.min(112, Math.hypot(dx, dy) / Math.hypot(base[0], base[1])));
+  }
+  geometryState.drawings[tool] = geometryConstrainedPoints(model);
+}
+
 function geometryToolButton(tool) {
   const selected = geometryState.tool === tool;
   const label = activeGrade === 3 && tool === 'triangles' ? '직각·정삼각형 만들기'
@@ -1266,8 +1345,16 @@ function geometryControlsMarkup() {
   if (geometryState.mode === '2d') {
     const pointCount = (geometryState.drawings[geometryState.tool] || []).length;
     const freePolygon = ['polygon', 'symmetry', 'congruence'].includes(geometryState.tool);
+    const easyShapeButtons = activeGrade === 3 && geometryState.tool === 'triangles'
+      ? `<div class="geometry-shape-presets" role="group" aria-label="쉽게 삼각형 만들기"><button type="button" class="geometry-secondary-button" data-geometry-preset-shape="rightTriangle">직각삼각형 바로 만들기</button><button type="button" class="geometry-secondary-button" data-geometry-preset-shape="equilateral">정삼각형 바로 만들기</button><button type="button" class="geometry-secondary-button" data-geometry-preset-shape="freeTriangle">점으로 자유롭게 그리기</button></div>`
+      : activeGrade === 3 && geometryState.tool === 'quadrilaterals'
+        ? `<div class="geometry-shape-presets" role="group" aria-label="쉽게 사각형 만들기"><button type="button" class="geometry-secondary-button" data-geometry-preset-shape="square">정사각형 바로 만들기</button><button type="button" class="geometry-secondary-button" data-geometry-preset-shape="freeSquare">점으로 자유롭게 그리기</button></div>`
+        : '';
     const countLabel = { lines: '선의 두 점', angles: '각의 꼭짓점과 두 점', triangles: '삼각형의 세 꼭짓점', quadrilaterals: '사각형의 네 꼭짓점', circle: '원의 중심과 원 위의 점', circleArea: '원의 중심과 원 위의 점' }[geometryState.tool];
-    const help = geometryState.tool === 'circle' || geometryState.tool === 'circleArea'
+    const constrained = geometryState.constrainedShapes[geometryState.tool];
+    const help = constrained
+      ? '꼭짓점을 끌어도 같은 모양이 유지돼요. 첫 번째 꼭짓점을 움직이면 도형 전체를 옮길 수 있어요.'
+      : geometryState.tool === 'circle' || geometryState.tool === 'circleArea'
       ? '그림판을 눌러 중심을 찍고, 원 위를 한 번 더 눌러 크기를 정해요. 점을 끌어 옮길 수도 있어요.'
       : geometryState.tool === 'angles'
         ? '꼭짓점을 먼저 찍고, 두 변이 뻗어 갈 점을 차례로 찍어요. 점을 끌어 각을 바꿔 보세요.'
@@ -1285,7 +1372,7 @@ function geometryControlsMarkup() {
     const drawButtons = `<div class="geometry-draw-actions"><button type="button" class="geometry-secondary-button" data-geometry-action="clear-drawing">모두 지우고 새로 그리기</button><button type="button" class="geometry-secondary-button" data-geometry-action="undo-point" ${pointCount ? '' : 'disabled'}>마지막 점 되돌리기</button>${freePolygon ? `<button type="button" class="geometry-secondary-button" data-geometry-action="continue-drawing">꼭짓점 더 찍기</button><button type="button" class="geometry-secondary-button" data-geometry-action="finish-drawing" ${pointCount < 3 ? 'disabled' : ''}>그리기 마치기</button>` : ''}</div>`;
     const linePicker = geometryState.tool === 'lines' ? `<label class="geometry-control"><span>그릴 선 고르기</span><select data-geometry-input="lineKind" aria-label="그릴 선 고르기"><option value="segment" ${geometryState.lineKind === 'segment' ? 'selected' : ''}>선분</option><option value="ray" ${geometryState.lineKind === 'ray' ? 'selected' : ''}>반직선</option><option value="line" ${geometryState.lineKind === 'line' ? 'selected' : ''}>직선</option></select></label>` : '';
     const areaHelp = geometryState.tool === 'circleArea' ? '<p class="geometry-formula">원의 넓이 = 반지름 × 반지름 × 3.14</p>' : '';
-    return `${linePicker}<p class="geometry-control-hint">${help}</p>${drawButtons}${areaHelp}`;
+    return `${easyShapeButtons}${linePicker}<p class="geometry-control-hint">${help}</p>${drawButtons}${areaHelp}`;
   }
   if (geometryState.tool === 'blocks') return `<div class="geometry-control"><span>보는 방향</span><div class="geometry-view-buttons" role="group" aria-label="쌓기나무 보는 방향"><button data-geometry-view="iso" aria-pressed="${geometryState.blockView === 'iso'}">입체</button><button data-geometry-view="top" aria-pressed="${geometryState.blockView === 'top'}">위</button><button data-geometry-view="front" aria-pressed="${geometryState.blockView === 'front'}">앞</button><button data-geometry-view="side" aria-pressed="${geometryState.blockView === 'side'}">옆</button></div></div><div class="geometry-control"><span>블록 놓기·빼기 <small>최대 4층</small></span>${geometryBlockEditor()}</div><div class="geometry-preset-buttons"><button data-geometry-preset="stairs">계단</button><button data-geometry-preset="wall">벽</button><button data-geometry-preset="clear">모두 비우기</button></div><div class="geometry-rotate-buttons"><button data-geometry-action="rotate-left">↶ 왼쪽으로 돌리기</button><button data-geometry-action="rotate-right">오른쪽으로 돌리기 ↷</button></div>`;
   const selectMarkup = geometryState.tool === 'prism'
@@ -1306,9 +1393,10 @@ function renderGeometryStage() {
   kind.textContent = geometryState.mode === '2d' ? '평면도형 살펴보기' : '입체도형 살펴보기';
   if (geometryState.mode === '2d') {
     const points = geometryState.drawings[geometryState.tool] || [];
-    const maxPoints = { lines: 2, angles: 3, triangles: 3, quadrilaterals: 4, circle: 2, circleArea: 2 }[geometryState.tool];
     const titles = { lines: '선을 직접 그려요', angles: '각을 직접 만들어요', triangles: '삼각형을 직접 그려요', quadrilaterals: '사각형을 직접 그려요', polygon: '다각형을 직접 그려요', circle: '원을 직접 그려요', circleArea: '원을 그리고 넓이를 살펴봐요', symmetry: '대칭 모양을 직접 바꿔요', congruence: '합동 모양을 직접 바꿔요' };
-    title.textContent = titles[geometryState.tool] || '도형을 직접 그려요';
+    const constrained = geometryState.constrainedShapes[geometryState.tool];
+    const constrainedTitle = constrained?.kind === 'equilateral' ? '정삼각형 만들기' : constrained?.kind === 'rightTriangle' ? '직각삼각형 만들기' : constrained?.kind === 'square' ? '정사각형 만들기' : '';
+    title.textContent = constrainedTitle || titles[geometryState.tool] || '도형을 직접 그려요';
     stage.innerHTML = geometryInteractiveSvg(geometryState.tool);
     if (geometryState.tool === 'lines') {
       const segmentLength = points.length === 2 ? Math.round(Math.hypot(points[1][0] - points[0][0], points[1][1] - points[0][1]) / 10) : 0;
@@ -1335,7 +1423,7 @@ function renderGeometryStage() {
     } else {
       readouts.innerHTML = geometryReadouts([['찍은 점', `${points.length}개`], ['그림판', '점을 눌러 보세요'], ['조작', '점을 끌어 옮겨요']]);
     }
-    caption.textContent = geometryState.tool === 'symmetry' ? '점선을 기준으로 양쪽 모양이 서로 포개지는지 점을 움직여 확인해요.' : geometryState.tool === 'congruence' ? '두 도형의 꼭짓점을 움직여 모양과 크기가 같을 때 포개지는지 살펴봐요.' : geometryState.tool === 'circle' || geometryState.tool === 'circleArea' ? '첫 점은 원의 중심, 두 번째 점은 원 위에 놓고 점을 끌어 크기를 바꿔요.' : geometryState.tool === 'angles' ? '첫 점이 꼭짓점이에요. 나머지 두 점을 움직여 각의 크기를 바꿔 보세요.' : '점은 꼭짓점이에요. 그림판을 눌러 점을 찍거나 이미 있는 점을 끌어 모양을 바꿔 보세요.';
+    caption.textContent = constrained ? '꼭짓점을 끌어도 같은 모양을 유지해요. 첫 번째 꼭짓점을 끌면 도형 전체가 움직여요.' : geometryState.tool === 'symmetry' ? '점선을 기준으로 양쪽 모양이 서로 포개지는지 점을 움직여 확인해요.' : geometryState.tool === 'congruence' ? '두 도형의 꼭짓점을 움직여 모양과 크기가 같을 때 포개지는지 살펴봐요.' : geometryState.tool === 'circle' || geometryState.tool === 'circleArea' ? '첫 점은 원의 중심, 두 번째 점은 원 위에 놓고 점을 끌어 크기를 바꿔요.' : geometryState.tool === 'angles' ? '첫 점이 꼭짓점이에요. 나머지 두 점을 움직여 각의 크기를 바꿔 보세요.' : '점은 꼭짓점이에요. 그림판을 눌러 점을 찍거나 이미 있는 점을 끌어 모양을 바꿔 보세요.';
     return;
   }
   if (geometryState.tool === 'blocks') {
@@ -5201,6 +5289,7 @@ function addGeometryPoint(point) {
   const tool = geometryState.tool;
   const points = geometryState.drawings[tool];
   if (!points) return;
+  geometryState.constrainedShapes[tool] = null;
   if (geometryState.drawingComplete) {
     geometryState.drawings[tool] = [];
     geometryState.drawingComplete = false;
@@ -5213,6 +5302,16 @@ function addGeometryPoint(point) {
   const nextPoints = geometryState.drawings[tool];
   if (nextPoints.length >= 8) return;
   nextPoints.push(point);
+  if (tool === 'triangles' && nextPoints.length === 3) {
+    geometryState.drawingComplete = true;
+    renderGeometryLab();
+    return;
+  }
+  if (tool === 'quadrilaterals' && nextPoints.length === 4) {
+    geometryState.drawingComplete = true;
+    renderGeometryLab();
+    return;
+  }
   if (fixedPointCount && nextPoints.length === fixedPointCount) geometryState.drawingComplete = true;
   if (nextPoints.length === 8) geometryState.drawingComplete = true;
   renderGeometryLab();
@@ -5224,6 +5323,12 @@ geometryStage.addEventListener('pointerdown', (event) => {
   if (handle) {
     event.preventDefault();
     geometryState.activeDragPoint = Number(handle.dataset.geometryPoint);
+    const points = geometryState.drawings[geometryState.tool];
+    const model = geometryState.constrainedShapes[geometryState.tool];
+    geometryState.dragOrigin = model ? {
+      point: [...points[geometryState.activeDragPoint]],
+      center: [...model.center],
+    } : null;
     geometryStage.setPointerCapture(event.pointerId);
     return;
   }
@@ -5236,12 +5341,17 @@ geometryStage.addEventListener('pointermove', (event) => {
   const point = geometryPointFromPointer(event);
   const points = geometryState.drawings[geometryState.tool];
   if (!point || !points?.[geometryState.activeDragPoint]) return;
-  points[geometryState.activeDragPoint] = point;
+  if (geometryState.constrainedShapes[geometryState.tool]) {
+    geometryMoveConstrainedPoint(geometryState.tool, geometryState.activeDragPoint, point, geometryState.dragOrigin);
+  } else {
+    points[geometryState.activeDragPoint] = point;
+  }
   renderGeometryStage();
 });
 
 function stopGeometryDrag() {
   geometryState.activeDragPoint = null;
+  geometryState.dragOrigin = null;
 }
 
 geometryStage.addEventListener('pointerup', stopGeometryDrag);
@@ -5253,10 +5363,17 @@ geometryStage.addEventListener('keydown', (event) => {
   if (!movement) return;
   event.preventDefault();
   const points = geometryState.drawings[geometryState.tool];
-  const point = points[Number(handle.dataset.geometryPoint)];
+  const pointIndex = Number(handle.dataset.geometryPoint);
+  const point = points[pointIndex];
   if (!point) return;
-  point[0] = Math.max(16, Math.min(304, point[0] + movement[0]));
-  point[1] = Math.max(16, Math.min(236, point[1] + movement[1]));
+  const target = [Math.max(16, Math.min(304, point[0] + movement[0])), Math.max(16, Math.min(236, point[1] + movement[1]))];
+  const model = geometryState.constrainedShapes[geometryState.tool];
+  if (model) {
+    geometryMoveConstrainedPoint(geometryState.tool, pointIndex, target, { point: [...point], center: [...model.center] });
+  } else {
+    point[0] = target[0];
+    point[1] = target[1];
+  }
   renderGeometryLab();
 });
 
@@ -5294,14 +5411,30 @@ document.querySelector('#geometry-controls').addEventListener('change', (event) 
   renderGeometryLab();
 });
 document.querySelector('#geometry-controls').addEventListener('click', (event) => {
+  const presetShape = event.target.closest('[data-geometry-preset-shape]')?.dataset.geometryPresetShape;
+  if (presetShape) {
+    if (presetShape === 'freeTriangle' || presetShape === 'freeSquare') {
+      const tool = presetShape === 'freeTriangle' ? 'triangles' : 'quadrilaterals';
+      geometryState.tool = tool;
+      geometryState.constrainedShapes[tool] = null;
+      geometryState.drawings[tool] = [];
+      geometryState.drawingComplete = false;
+      renderGeometryLab();
+    } else {
+      geometryMakePreset(presetShape);
+    }
+    return;
+  }
   const drawAction = event.target.closest('[data-geometry-action]')?.dataset.geometryAction;
   if (drawAction === 'clear-drawing') {
     geometryState.drawings[geometryState.tool] = [];
+    if (geometryState.constrainedShapes[geometryState.tool]) geometryState.constrainedShapes[geometryState.tool] = null;
     geometryState.drawingComplete = false;
     renderGeometryLab();
     return;
   }
   if (drawAction === 'undo-point') {
+    if (geometryState.constrainedShapes[geometryState.tool]) geometryState.constrainedShapes[geometryState.tool] = null;
     geometryState.drawings[geometryState.tool].pop();
     geometryState.drawingComplete = false;
     renderGeometryLab();

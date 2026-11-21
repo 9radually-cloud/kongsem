@@ -1227,6 +1227,8 @@ button:focus-visible, a:focus-visible, textarea:focus-visible { outline-color: v
 .geometry-draw-actions { display: grid; gap: 7px; }
 .geometry-draw-actions button { padding: 8px 12px; }
 .geometry-draw-actions button:disabled { opacity: .45; cursor: not-allowed; }
+.geometry-shape-presets { display: grid; gap: 7px; }
+.geometry-shape-presets button { min-height: 44px; padding: 8px 12px; background: #edf4e7; color: #405e3d; }
 .geometry-secondary-button { min-height: 44px; border: 1px solid #ccd5e4; border-radius: 10px; background: #f3f5fa; color: #435579; font: inherit; font-size: 13px; cursor: pointer; }
 .geometry-formula { margin: 0; padding: 10px; border-radius: 9px; background: #edf3e7; color: #466548; font-size: 14px; font-weight: 700; text-align: center; }
 .geometry-view-buttons button { flex: 1; min-width: 52px; padding: 6px 8px; }
