@@ -154,6 +154,40 @@ const geometrySolidFacts = {
   cone: [['밑면', '1개'], ['곡면', '1개'], ['꼭짓점', '1개']],
   sphere: [['평평한 면', '0개'], ['곡면', '1개'], ['꼭짓점', '0개']],
 };
+const graphPlans = {
+  3: { types: ['picture'], unit: '자료의 정리 · 그림그래프', note: '그림 기호 하나가 몇 개를 나타내는지 정해 그림그래프를 만들어요.' },
+  4: { types: ['bar', 'line'], unit: '막대그래프 · 꺾은선그래프', note: '막대그래프와 꺾은선그래프로 자료의 크기와 시간에 따른 변화를 나타내요.' },
+  5: { types: ['picture', 'bar', 'line'], unit: '앞에서 배운 그래프 복습 · 평균', note: '앞에서 배운 그래프를 만들고 자료의 평균도 함께 살펴봐요.' },
+  6: { types: ['band', 'pie'], unit: '비율그래프 · 띠그래프 · 원그래프', note: '전체에서 각 항목이 차지하는 비율을 띠그래프와 원그래프로 나타내요.' },
+};
+const graphTypeLabels = { picture: '그림그래프', bar: '막대그래프', line: '꺾은선그래프', band: '띠그래프', pie: '원그래프' };
+const graphTypeDescriptions = {
+  picture: '그림 기호 하나가 몇 개를 뜻하는지 정해 자료를 보여줘요.',
+  bar: '막대의 높이를 비교해 항목별 수를 한눈에 살펴봐요.',
+  line: '점을 선으로 이어 시간이나 순서에 따른 변화를 살펴봐요.',
+  band: '전체를 띠 하나로 보고 항목별 비율을 나누어 나타내요.',
+  pie: '전체를 원으로 보고 항목별 비율을 조각으로 나타내요.',
+};
+const graphState = {
+  type: 'picture',
+  title: '좋아하는 과일 조사',
+  pictureKey: 1,
+  hasEditedData: false,
+  categories: [
+    { name: '사과', value: 8 },
+    { name: '바나나', value: 5 },
+    { name: '포도', value: 7 },
+    { name: '귤', value: 4 },
+  ],
+};
+const graphColors = ['#557b57', '#dc8762', '#6f83b3', '#d2ae4f', '#a5769b', '#5496a0'];
+const graphExamples = {
+  picture: { title: '좋아하는 과일 조사', categories: [{ name: '사과', value: 8 }, { name: '바나나', value: 5 }, { name: '포도', value: 7 }, { name: '귤', value: 4 }] },
+  bar: { title: '좋아하는 과일 조사', categories: [{ name: '사과', value: 8 }, { name: '바나나', value: 5 }, { name: '포도', value: 7 }, { name: '귤', value: 4 }] },
+  line: { title: '한 주 동안 기온', categories: [{ name: '월', value: 18 }, { name: '화', value: 20 }, { name: '수', value: 19 }, { name: '목', value: 22 }] },
+  band: { title: '우리 반 이동 방법', categories: [{ name: '걷기', value: 8 }, { name: '버스', value: 5 }, { name: '자전거', value: 7 }, { name: '자동차', value: 4 }] },
+  pie: { title: '우리 반 이동 방법', categories: [{ name: '걷기', value: 8 }, { name: '버스', value: 5 }, { name: '자전거', value: 7 }, { name: '자동차', value: 4 }] },
+};
 function createSampleMachineParts() {
   return [{ id: 'part-1', type: 'ramp', x: -2, y: 1, z: 0, width: 3.2, height: 0.12, depth: 0.8, angle: -12, yaw: 0, speed: 0, leverArm: 0.55, phase: 0, leverOmega: 0 }];
 }
@@ -962,7 +996,181 @@ function setCurriculumGrade(grade) {
     updateBattleProgress();
   }
   renderGeometryLab();
+  renderGraphMaker();
   return true;
+}
+
+function graphEscape(value) {
+  return String(value).replace(/[&<>"']/g, (character) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[character]);
+}
+
+function graphLoadExample(type) {
+  const example = graphExamples[type];
+  if (!example) return;
+  graphState.title = example.title;
+  graphState.categories = example.categories.map((item) => ({ ...item }));
+}
+
+function graphTypeButton(type) {
+  return `<button type="button" class="graph-type-button${graphState.type === type ? ' selected' : ''}" data-graph-type="${type}" aria-pressed="${graphState.type === type}">${graphTypeLabels[type]}</button>`;
+}
+
+function graphDataRowsMarkup() {
+  return graphState.categories.map((item, index) => `<div class="graph-data-row"><label class="sr-only" for="graph-category-${index}">항목 ${index + 1} 이름</label><input id="graph-category-${index}" data-graph-field="name" data-graph-index="${index}" maxlength="8" value="${graphEscape(item.name)}" aria-label="항목 ${index + 1} 이름"><label class="sr-only" for="graph-value-${index}">항목 ${index + 1} 수</label><input id="graph-value-${index}" data-graph-field="value" data-graph-index="${index}" type="number" min="0" max="1000" step="1" inputmode="numeric" value="${item.value}" aria-label="${graphEscape(item.name || `항목 ${index + 1}`)} 수"><button type="button" class="graph-remove-row" data-graph-remove="${index}" aria-label="${graphEscape(item.name || `항목 ${index + 1}`)} 지우기" ${graphState.categories.length <= 2 ? 'disabled' : ''}>×</button></div>`).join('');
+}
+
+function graphGridSvg({ yMax, x = 76, y = 42, width = 600, height = 248, ticks = 5 }) {
+  return Array.from({ length: ticks + 1 }, (_, index) => {
+    const yy = y + height - height * index / ticks;
+    const value = Math.round(yMax * index / ticks);
+    return `<path d="M${x} ${yy}H${x + width}" class="graph-grid-line"/><text x="${x - 12}" y="${yy + 4}" text-anchor="end" class="graph-axis-label">${value}</text>`;
+  }).join('');
+}
+
+function graphCartesianSvg(kind) {
+  const values = graphState.categories.map((item) => item.value);
+  const maximum = Math.max(1, ...values);
+  const yMax = Math.ceil(maximum / 5) * 5;
+  const left = 76;
+  const top = 42;
+  const width = 600;
+  const height = 248;
+  const step = width / graphState.categories.length;
+  const grid = graphGridSvg({ yMax, x: left, y: top, width, height });
+  const labels = graphState.categories.map((item, index) => `<text x="${left + step * (index + .5)}" y="${top + height + 28}" text-anchor="middle" class="graph-category-label">${graphEscape(item.name || `항목 ${index + 1}`)}</text>`).join('');
+  const points = values.map((value, index) => ({ x: left + step * (index + .5), y: top + height - value / yMax * height, value }));
+  const series = kind === 'bar'
+    ? points.map((point, index) => `<rect x="${point.x - Math.min(34, step * .27)}" y="${point.y}" width="${Math.min(68, step * .54)}" height="${Math.max(0, top + height - point.y)}" rx="7" fill="${graphColors[index % graphColors.length]}" class="graph-bar"/><text x="${point.x}" y="${point.y - 9}" text-anchor="middle" class="graph-value-label">${point.value}</text>`).join('')
+    : `<polyline points="${points.map((point) => `${point.x},${point.y}`).join(' ')}" class="graph-line-series"/>${points.map((point, index) => `<circle cx="${point.x}" cy="${point.y}" r="7" fill="${graphColors[index % graphColors.length]}" class="graph-line-point"/><text x="${point.x}" y="${point.y - 13}" text-anchor="middle" class="graph-value-label">${point.value}</text>`).join('')}`;
+  const average = values.reduce((sum, value) => sum + value, 0) / values.length;
+  const averageY = top + height - average / yMax * height;
+  const averageLine = activeGrade === 5 ? `<path d="M${left} ${averageY}H${left + width}" class="graph-average-line"/><text x="${left + width - 2}" y="${averageY - 6}" text-anchor="end" class="graph-average-label">평균 ${Number.isInteger(average) ? average : average.toFixed(1)}</text>` : '';
+  const axis = `<path d="M${left} ${top}V${top + height}H${left + width}" class="graph-axis-line"/>`;
+  return `<svg class="graph-svg" viewBox="0 0 720 380" role="img" aria-label="${graphEscape(graphTypeLabels[kind])}: ${graphState.categories.map((item) => `${graphEscape(item.name)} ${item.value}`).join(', ')}">${grid}${axis}${averageLine}${series}${labels}<text x="18" y="30" class="graph-axis-title">수</text></svg>`;
+}
+
+function graphPictureSvg() {
+  const key = graphState.pictureKey;
+  const maxRows = Math.max(1, ...graphState.categories.map((item) => Math.ceil(item.value / key / 12)));
+  const rowHeight = maxRows * 30 + 16;
+  const startY = 54;
+  const rows = graphState.categories.map((item, index) => {
+    const y = startY + index * rowHeight;
+    const iconCount = Math.ceil(item.value / key);
+    const icons = Array.from({ length: iconCount }, (_, iconIndex) => {
+      const x = 204 + (iconIndex % 12) * 35;
+      const iconY = y + Math.floor(iconIndex / 12) * 28;
+      const amount = Math.min(1, item.value / key - iconIndex);
+      return `<path d="M${x} ${iconY - 9}C${x + 10} ${iconY - 7} ${x + 9} ${iconY + 8} ${x} ${iconY + 9}C${x - 10} ${iconY + 7} ${x - 9} ${iconY - 8} ${x} ${iconY - 9}Z" fill="${graphColors[index % graphColors.length]}" opacity="${Math.max(.18, amount)}" class="graph-picture-icon"/><circle cx="${x}" cy="${iconY}" r="2.5" fill="#fffefa"/>`;
+    }).join('');
+    return `<text x="24" y="${y + 5}" class="graph-category-label">${graphEscape(item.name || `항목 ${index + 1}`)}</text>${icons}<text x="650" y="${y + 5}" text-anchor="end" class="graph-value-label">${item.value}</text>`;
+  }).join('');
+  const keyY = startY + graphState.categories.length * rowHeight - 8;
+  return `<svg class="graph-svg graph-picture-svg" viewBox="0 0 680 ${Math.max(250, keyY + 36)}" role="img" aria-label="그림 기호 하나가 ${key}개를 나타내는 그림그래프">${rows}<path d="M24 ${startY - 26}H656" class="graph-axis-line"/><path d="M34 ${keyY - 9}C44 ${keyY - 7} 43 ${keyY + 8} 34 ${keyY + 9}C24 ${keyY + 7} 25 ${keyY - 8} 34 ${keyY - 9}Z" fill="#557b57" class="graph-picture-icon"/><text x="52" y="${keyY + 5}" class="graph-picture-key">그림 하나는 ${key}개를 나타내요</text></svg>`;
+}
+
+function graphBandSvg() {
+  const total = graphState.categories.reduce((sum, item) => sum + item.value, 0) || 1;
+  let x = 44;
+  const width = 632;
+  const barY = 105;
+  const barHeight = 74;
+  const segments = graphState.categories.map((item, index) => {
+    const portion = item.value / total;
+    const segmentWidth = portion * width;
+    const segment = `<rect x="${x}" y="${barY}" width="${segmentWidth}" height="${barHeight}" fill="${graphColors[index % graphColors.length]}" class="graph-band-segment"/>${portion >= .09 ? `<text x="${x + segmentWidth / 2}" y="${barY + 43}" text-anchor="middle" class="graph-band-label">${Math.round(portion * 100)}%</text>` : ''}`;
+    x += segmentWidth;
+    return segment;
+  }).join('');
+  const legend = graphState.categories.map((item, index) => {
+    const col = index % 3;
+    const row = Math.floor(index / 3);
+    const lx = 52 + col * 218;
+    const ly = 235 + row * 46;
+    return `<circle cx="${lx}" cy="${ly}" r="7" fill="${graphColors[index % graphColors.length]}"/><text x="${lx + 15}" y="${ly + 5}" class="graph-legend-label">${graphEscape(item.name || `항목 ${index + 1}`)} · ${Math.round(item.value / total * 100)}%</text>`;
+  }).join('');
+  return `<svg class="graph-svg" viewBox="0 0 720 340" role="img" aria-label="띠그래프, 전체 ${total}개를 항목별 비율로 나타냄"><text x="44" y="76" class="graph-axis-title">전체 ${total}개</text>${segments}${legend}</svg>`;
+}
+
+function graphPieSvg() {
+  const total = graphState.categories.reduce((sum, item) => sum + item.value, 0) || 1;
+  const cx = 202;
+  const cy = 180;
+  const radius = 128;
+  let startAngle = -Math.PI / 2;
+  const slices = graphState.categories.map((item, index) => {
+    const fraction = item.value / total;
+    const endAngle = startAngle + fraction * Math.PI * 2;
+    const x1 = cx + radius * Math.cos(startAngle);
+    const y1 = cy + radius * Math.sin(startAngle);
+    const x2 = cx + radius * Math.cos(endAngle);
+    const y2 = cy + radius * Math.sin(endAngle);
+    const large = fraction > .5 ? 1 : 0;
+    const path = fraction >= .999 ? `<circle cx="${cx}" cy="${cy}" r="${radius}" fill="${graphColors[index % graphColors.length]}"/>` : `<path d="M${cx} ${cy}L${x1} ${y1}A${radius} ${radius} 0 ${large} 1 ${x2} ${y2}Z" fill="${graphColors[index % graphColors.length]}" class="graph-pie-slice"/>`;
+    const middle = startAngle + fraction * Math.PI;
+    const label = fraction >= .08 ? `<text x="${cx + radius * .62 * Math.cos(middle)}" y="${cy + radius * .62 * Math.sin(middle) + 5}" text-anchor="middle" class="graph-pie-label">${Math.round(fraction * 100)}%</text>` : '';
+    startAngle = endAngle;
+    return `${path}${label}`;
+  }).join('');
+  const legend = graphState.categories.map((item, index) => {
+    const y = 76 + index * 40;
+    return `<circle cx="400" cy="${y}" r="7" fill="${graphColors[index % graphColors.length]}"/><text x="417" y="${y + 5}" class="graph-legend-label">${graphEscape(item.name || `항목 ${index + 1}`)} · ${item.value}개 (${Math.round(item.value / total * 100)}%)</text>`;
+  }).join('');
+  return `<svg class="graph-svg" viewBox="0 0 720 360" role="img" aria-label="원그래프, 전체 ${total}개를 항목별 비율로 나타냄"><circle cx="${cx}" cy="${cy}" r="${radius}" fill="#edf0e6"/>${slices}${legend}<text x="202" y="338" text-anchor="middle" class="graph-axis-title">전체 ${total}개</text></svg>`;
+}
+
+function renderGraphDisplay() {
+  const plan = graphPlans[activeGrade];
+  if (!plan) return;
+  const visual = document.querySelector('#graph-visual');
+  const title = document.querySelector('#graph-result-title');
+  const caption = document.querySelector('#graph-caption');
+  const summary = document.querySelector('#graph-summary');
+  const typeCaption = document.querySelector('#graph-type-caption');
+  if (!visual || !title || !summary) return;
+  const total = graphState.categories.reduce((sum, item) => sum + item.value, 0);
+  const highest = [...graphState.categories].sort((a, b) => b.value - a.value)[0];
+  title.textContent = graphState.title.trim() || '내 그래프';
+  typeCaption.textContent = graphTypeLabels[graphState.type];
+  visual.innerHTML = graphState.type === 'picture' ? graphPictureSvg()
+    : graphState.type === 'bar' || graphState.type === 'line' ? graphCartesianSvg(graphState.type)
+      : graphState.type === 'band' ? graphBandSvg() : graphPieSvg();
+  const cards = [['항목 수', `${graphState.categories.length}개`], ['자료의 합', `${total}개`], ['가장 큰 값', `${highest?.name || '없음'} · ${highest?.value || 0}개`]];
+  if (activeGrade === 5) {
+    const average = total / graphState.categories.length;
+    cards[2] = ['자료의 평균', `${Number.isInteger(average) ? average : average.toFixed(1)}개`];
+  }
+  summary.innerHTML = cards.map(([label, value]) => `<div class="graph-summary-item"><span>${label}</span><strong>${graphEscape(value)}</strong></div>`).join('');
+  caption.textContent = graphTypeDescriptions[graphState.type];
+  visual.setAttribute('aria-label', `${graphTypeLabels[graphState.type]} 그래프`);
+}
+
+function renderGraphMaker() {
+  const plan = graphPlans[activeGrade];
+  const root = document.querySelector('#graph-maker-view');
+  if (!plan || !root) return;
+  if (!plan.types.includes(graphState.type)) {
+    graphState.type = plan.types[0];
+    if (!graphState.hasEditedData) graphLoadExample(graphState.type);
+  }
+  document.querySelector('#graph-grade-description').textContent = activeGrade === 5
+    ? '앞에서 배운 그래프를 만들고 자료의 평균도 함께 알아봐요.'
+    : `${activeGrade}학년에서 배우는 그래프를 자료로 완성해 봐요.`;
+  document.querySelector('#graph-course-note').textContent = `${activeGrade}학년 · ${plan.unit} · ${plan.note}`;
+  document.querySelector('#graph-type-list').innerHTML = plan.types.map(graphTypeButton).join('');
+  document.querySelector('#graph-title-input').value = graphState.title;
+  document.querySelector('#graph-data-rows').innerHTML = graphDataRowsMarkup();
+  document.querySelector('#graph-picture-key-field').hidden = graphState.type !== 'picture';
+  document.querySelector('#graph-picture-key').value = String(graphState.pictureKey);
+  document.querySelector('#graph-add-row').disabled = graphState.categories.length >= 6;
+  document.querySelector('#graph-editor-hint').textContent = graphState.type === 'line'
+    ? '시간이나 순서에 따라 달라지는 자료를 넣어 보세요. 항목 이름은 월이나 날짜처럼 바꿀 수 있어요.'
+    : graphState.type === 'picture'
+      ? '항목 이름과 수를 바꿔 보세요. 그림 기호 하나가 나타내는 수는 자료에 맞춰 정해져요.'
+      : graphState.type === 'band' || graphState.type === 'pie'
+        ? '각 항목의 수를 바꾸면 전체에서 차지하는 비율이 함께 바뀌어요.'
+        : activeGrade === 5 ? '자료를 바꾸면 평균도 함께 계산돼요.' : '항목 이름과 수를 바꾸면 그래프가 바로 완성돼요.';
+  renderGraphDisplay();
 }
 
 function geometryPointList(count, cx = 160, cy = 126, radius = 82, rotation = -90) {
@@ -5261,6 +5469,7 @@ const studentViews = {
   together: document.querySelector('#study-together-view'),
   battle: document.querySelector('#battle-view'),
   geometry: document.querySelector('#geometry-view'),
+  graphs: document.querySelector('#graph-maker-view'),
   machine: document.querySelector('#machine-lab-view'),
 };
 
@@ -5279,12 +5488,58 @@ function showStudentView(name) {
     button.classList.toggle('active', selected);
     button.setAttribute('aria-pressed', String(selected));
   });
-  publishStudentActivity(name === 'battle' ? 'AI 대결 중' : name === 'together' ? '함께 공부 중' : name === 'geometry' ? '도형 놀이터에서 탐구 중' : name === 'machine' ? '움직이는 장치 제작 중' : '오늘 미션 연습 중');
+  publishStudentActivity(name === 'battle' ? 'AI 대결 중' : name === 'together' ? '함께 공부 중' : name === 'geometry' ? '도형 놀이터에서 탐구 중' : name === 'graphs' ? '그래프 제작소에서 자료 정리 중' : name === 'machine' ? '움직이는 장치 제작 중' : '오늘 미션 연습 중');
   window.scrollTo({ top: 0, behavior: 'instant' });
 }
 
 document.querySelectorAll('[data-student-tab]').forEach((button) => {
   button.addEventListener('click', () => showStudentView(button.dataset.studentTab));
+});
+
+document.querySelector('#graph-type-list').addEventListener('click', (event) => {
+  const button = event.target.closest('[data-graph-type]');
+  if (!button) return;
+  graphState.type = button.dataset.graphType;
+  if (!graphState.hasEditedData) graphLoadExample(graphState.type);
+  renderGraphMaker();
+});
+
+document.querySelector('#graph-maker-view').addEventListener('input', (event) => {
+  if (event.target.id === 'graph-title-input') {
+    graphState.title = event.target.value;
+    graphState.hasEditedData = true;
+    renderGraphDisplay();
+    return;
+  }
+  const field = event.target.closest('[data-graph-field]');
+  if (!field) return;
+  const item = graphState.categories[Number(field.dataset.graphIndex)];
+  if (!item) return;
+  graphState.hasEditedData = true;
+  if (field.dataset.graphField === 'name') item.name = field.value.slice(0, 8);
+  if (field.dataset.graphField === 'value') item.value = Math.max(0, Math.min(1000, Number.parseInt(field.value, 10) || 0));
+  renderGraphDisplay();
+});
+
+document.querySelector('#graph-picture-key').addEventListener('change', (event) => {
+  graphState.pictureKey = Number(event.target.value);
+  renderGraphDisplay();
+});
+
+document.querySelector('#graph-maker-view').addEventListener('click', (event) => {
+  const remove = event.target.closest('[data-graph-remove]');
+  if (remove && graphState.categories.length > 2) {
+    graphState.hasEditedData = true;
+    graphState.categories.splice(Number(remove.dataset.graphRemove), 1);
+    renderGraphMaker();
+    return;
+  }
+  if (event.target.closest('#graph-add-row') && graphState.categories.length < 6) {
+    graphState.hasEditedData = true;
+    graphState.categories.push({ name: `항목 ${graphState.categories.length + 1}`, value: 0 });
+    renderGraphMaker();
+    document.querySelector(`#graph-category-${graphState.categories.length - 1}`)?.focus();
+  }
 });
 
 document.querySelectorAll('[data-geometry-mode]').forEach((button) => {

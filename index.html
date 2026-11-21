@@ -75,6 +75,7 @@
           <button class="student-tab" type="button" data-student-tab="together" aria-pressed="false">함께 공부</button>
           <button class="student-tab" type="button" data-student-tab="battle" aria-pressed="false">AI 대결</button>
           <button class="student-tab" type="button" data-student-tab="geometry" aria-pressed="false"><span class="geometry-tab-full">도형 놀이터</span><span class="geometry-tab-short">도형</span></button>
+          <button class="student-tab graph-tab" type="button" data-student-tab="graphs" aria-pressed="false"><span class="graph-tab-full">그래프 제작소</span><span class="graph-tab-short">그래프</span></button>
           <button class="student-tab machine-tab" type="button" data-student-tab="machine" aria-pressed="false"><span class="machine-tab-full">움직이는 장치 제작소</span><span class="machine-tab-short">장치</span><span class="machine-tab-lock" id="machine-tab-lock" aria-label="선생님이 잠금">잠김</span></button>
           <button class="student-tab notebook-open" id="open-notebook" type="button" aria-haspopup="dialog">콩이 공책</button>
         </nav>
@@ -164,6 +165,30 @@
               </aside>
             </div>
             <p class="geometry-safety-note">학년에서 배우는 도형을 직접 만들어 보고, 모양과 성질을 관찰해요.</p>
+          </section>
+
+          <section class="student-view feature-view graph-maker-view" id="graph-maker-view" hidden>
+            <div class="feature-heading"><p class="eyebrow">자료를 모아 한눈에</p><h1>그래프 제작소</h1><p class="heading-subtitle" id="graph-grade-description">자료를 고치고 그래프가 어떻게 달라지는지 살펴봐요.</p></div>
+            <div class="geometry-course-note"><span class="geometry-course-dot" aria-hidden="true"></span><span id="graph-course-note"></span></div>
+            <div class="graph-type-list" id="graph-type-list" role="group" aria-label="만들 그래프 종류"></div>
+            <div class="graph-maker-workspace">
+              <aside class="graph-data-card">
+                <div><p class="section-caption">내 자료</p><h2>표를 고쳐 그래프 만들기</h2></div>
+                <label class="graph-title-field">그래프 제목<input id="graph-title-input" type="text" maxlength="48" /></label>
+                <div class="graph-data-head"><span>항목 이름</span><span>수</span><span class="sr-only">항목 지우기</span></div>
+                <div id="graph-data-rows" class="graph-data-rows"></div>
+                <label class="graph-picture-key-field" id="graph-picture-key-field">그림 하나가 나타내는 수<select id="graph-picture-key" aria-label="그림 기호 하나가 나타내는 수"><option value="1">1개</option><option value="2">2개</option><option value="5">5개</option><option value="10">10개</option></select></label>
+                <button class="geometry-secondary-button" id="graph-add-row" type="button">+ 항목 더 넣기</button>
+                <p class="geometry-control-hint" id="graph-editor-hint"></p>
+              </aside>
+              <section class="graph-result-card" aria-labelledby="graph-result-title">
+                <div class="graph-result-heading"><div><p class="section-caption" id="graph-type-caption">그래프로 나타내기</p><h2 id="graph-result-title">내 그래프</h2></div><span class="geometry-live-badge">자료를 바꾸면 바로 반영</span></div>
+                <div id="graph-visual" class="graph-visual" role="img" aria-label="내 자료 그래프"></div>
+                <div id="graph-summary" class="graph-summary" aria-live="polite"></div>
+                <p class="geometry-stage-caption" id="graph-caption"></p>
+                <p class="geometry-safety-note">그래프를 보고 가장 많은 항목과 자료의 차이를 찾아보세요.</p>
+              </section>
+            </div>
           </section>
 
           <section class="student-view feature-view machine-lab-view" id="machine-lab-view" hidden>
