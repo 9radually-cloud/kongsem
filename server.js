@@ -13,6 +13,7 @@ const contentTypes = new Map([
   ['.svg', 'image/svg+xml'],
   ['.png', 'image/png'],
   ['.woff2', 'font/woff2'],
+  ['.hwpx', 'application/octet-stream'],
 ]);
 
 const server = http.createServer(async (request, response) => {
@@ -112,6 +113,7 @@ const server = http.createServer(async (request, response) => {
     const content = await fs.readFile(filePath);
     response.writeHead(200, {
       'Content-Type': contentTypes.get(path.extname(filePath)) || 'application/octet-stream',
+      ...(path.extname(filePath) === '.hwpx' ? { 'Content-Disposition': "attachment; filename*=UTF-8''%EC%BD%A9%EC%85%88%EC%BD%A9%EC%85%88_%EB%8F%84%EA%B5%AC_%EC%82%AC%EC%9A%A9_%EC%95%88%EB%82%B4%EC%84%9C.hwpx" } : {}),
       'Cache-Control': 'no-cache',
       'X-Content-Type-Options': 'nosniff',
     });

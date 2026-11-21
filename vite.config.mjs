@@ -1,4 +1,5 @@
 import { createRequire } from 'node:module';
+import { readFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
 import { defineConfig, loadEnv } from 'vite';
 
@@ -26,6 +27,17 @@ export default defineConfig(({ mode }) => {
       configureServer(server) {
         server.middlewares.use(async (request, response, next) => {
           const pathname = new URL(request.url || '/', 'http://localhost').pathname;
+          if (decodeURIComponent(pathname) === '/콩셈콩셈_도구_사용_안내서.hwpx' && request.method === 'GET') {
+            const document = await readFile(resolve(process.cwd(), 'public/콩셈콩셈_도구_사용_안내서.hwpx'));
+            response.writeHead(200, {
+              'Content-Type': 'application/octet-stream',
+              'Content-Disposition': "attachment; filename*=UTF-8''%EC%BD%A9%EC%85%88%EC%BD%A9%EC%85%88_%EB%8F%84%EA%B5%AC_%EC%82%AC%EC%9A%A9_%EC%95%88%EB%82%B4%EC%84%9C.hwpx",
+              'Content-Length': document.length,
+              'Cache-Control': 'no-cache',
+            });
+            response.end(document);
+            return;
+          }
           if (pathname === '/api/supabase-config' && request.method === 'GET') {
             handleSupabaseConfig(request, response);
             return;
