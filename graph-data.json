@@ -1,0 +1,42 @@
+{
+  "monthlyTemperatures": {
+    "id": "monthlyTemperatures",
+    "title": "월별 기온 (도)",
+    "labels": ["3월", "4월", "5월", "6월"],
+    "values": [3, 5, 4, 7],
+    "unit": "도",
+    "tickStep": 1
+  },
+  "weekdayTemperatures": {
+    "id": "weekdayTemperatures",
+    "title": "요일별 기온 (도)",
+    "labels": ["월요일", "화요일", "수요일", "목요일"],
+    "values": [2, 3, 7, 6],
+    "unit": "도",
+    "tickStep": 1
+  },
+  "hourlyCounts": {
+    "id": "hourlyCounts",
+    "title": "시간별 개수 (개)",
+    "labels": ["1시", "2시", "3시", "4시"],
+    "values": [2, 5, 4, 8],
+    "unit": "개",
+    "tickStep": 1
+  },
+  "scale20": {
+    "id": "scale20",
+    "title": "자료 값 (눈금 2씩)",
+    "labels": ["가", "나", "다", "라"],
+    "values": [4, 10, 14, 20],
+    "unit": "개",
+    "tickStep": 2
+  },
+  "scale12": {
+    "id": "scale12",
+    "title": "자료 값 (눈금 2씩)",
+    "labels": ["가", "나", "다", "라"],
+    "values": [2, 6, 8, 12],
+    "unit": "개",
+    "tickStep": 2
+  }
+}

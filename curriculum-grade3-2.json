@@ -1,0 +1,92 @@
+{
+  "grade": 3,
+  "semester": 2,
+  "units": [
+    {
+      "id": "multiplication",
+      "title": "곱셈",
+      "missionCount": 4,
+      "focus": "세 자리 수에 한 자리 수를 곱하고, 두 자리 수끼리 곱하는 방법 이해하기",
+      "keywords": ["곱셈", "곱하기", "곱해", "곱", "배", "곱셈식", "세 자리 수", "곱셈의 원리"],
+      "visual": "multiplication",
+      "skills": [
+        { "id": "multiplication_meaning", "label": "곱셈의 뜻" },
+        { "id": "multiplication_3digit_1digit", "label": "세 자리 수와 한 자리 수" },
+        { "id": "multiplication_2digit_2digit", "label": "두 자리 수끼리 곱하기" }
+      ],
+      "prompts": ["세 자리 수에 한 자리 수를 곱하는 방법을 알려주세요.", "두 자리 수끼리 곱할 때 왜 자리를 맞추나요?", "곱셈을 그림이나 묶음으로 보여주세요."]
+    },
+    {
+      "id": "division",
+      "title": "나눗셈",
+      "missionCount": 4,
+      "focus": "나눗셈의 몫과 나머지를 구하고 곱셈과 나눗셈의 관계 이해하기",
+      "keywords": ["나눗셈", "나누기", "몫", "나머지", "나누어", "나눠", "나눗셈식", "곱셈과 나눗셈"],
+      "visual": "division",
+      "skills": [
+        { "id": "division_meaning", "label": "나눗셈의 뜻" },
+        { "id": "division_quotient", "label": "몫 구하기" },
+        { "id": "division_remainder", "label": "나머지 구하기" },
+        { "id": "division_relation", "label": "곱셈과 나눗셈의 관계" }
+      ],
+      "prompts": ["나머지가 있는 나눗셈을 알려주세요.", "나눗셈에서 몫과 나머지는 무엇인가요?", "곱셈으로 나눗셈 답을 확인하는 방법을 알려주세요."]
+    },
+    {
+      "id": "circles",
+      "title": "원",
+      "missionCount": 4,
+      "focus": "원의 중심, 반지름, 지름을 알아보고 컴퍼스로 원 그리기",
+      "keywords": ["원", "원의 중심", "중심", "반지름", "지름", "컴퍼스", "원의 크기"],
+      "visual": "circle",
+      "skills": [
+        { "id": "circle_parts", "label": "원의 중심과 구성" },
+        { "id": "circle_radius", "label": "반지름과 지름" },
+        { "id": "circle_draw", "label": "컴퍼스로 원 그리기" }
+      ],
+      "prompts": ["원의 중심과 반지름을 그림으로 알려주세요.", "지름은 반지름과 어떤 관계인가요?", "컴퍼스로 크기가 다른 원을 그리는 방법을 알려주세요."]
+    },
+    {
+      "id": "fractions3",
+      "title": "분수",
+      "missionCount": 4,
+      "focus": "똑같이 나눈 부분과 전체의 관계를 분수로 나타내고 분수의 크기 비교하기",
+      "keywords": ["분수", "분자", "분모", "단위분수", "진분수", "분수의 크기", "똑같이 나누", "몇 분의 몇"],
+      "visual": "fraction3",
+      "skills": [
+        { "id": "fraction3_unit", "label": "분수의 단위" },
+        { "id": "fraction3_read", "label": "분수로 나타내기" },
+        { "id": "fraction3_compare", "label": "분수의 크기 비교" }
+      ],
+      "prompts": ["분모와 분자는 무엇을 나타내나요?", "그림을 분수로 나타내는 방법을 알려주세요.", "분모가 다른 분수의 크기는 어떻게 비교하나요?"]
+    },
+    {
+      "id": "capacity_weight",
+      "title": "들이와 무게",
+      "missionCount": 4,
+      "focus": "L와 mL, kg와 g의 관계를 알고 들이와 무게의 덧셈·뺄셈하기",
+      "keywords": ["들이", "무게", "리터", "밀리리터", "킬로그램", "그램", "L", "mL", "kg", "g", "몇 리터", "몇 그램"],
+      "visual": "measurement",
+      "skills": [
+        { "id": "capacity_units", "label": "L와 mL" },
+        { "id": "weight_units", "label": "kg와 g" },
+        { "id": "measurement_add_subtract", "label": "단위 바꾸어 계산" }
+      ],
+      "prompts": ["1L와 1000mL는 어떻게 같나요?", "kg와 g를 바꾸는 방법을 알려주세요.", "들이와 무게를 더하거나 뺄 때 무엇을 조심하나요?"]
+    },
+    {
+      "id": "data_organization",
+      "title": "자료의 정리",
+      "missionCount": 4,
+      "focus": "표와 그림그래프에 자료를 정리하고 그림 기호가 나타내는 수 읽기",
+      "keywords": ["자료", "표", "그림그래프", "그래프", "그림 기호", "조사", "몇 명", "자료 정리"],
+      "visual": "data-organization",
+      "skills": [
+        { "id": "data_table", "label": "표 읽기" },
+        { "id": "pictograph_read", "label": "그림그래프 읽기" },
+        { "id": "pictograph_key", "label": "그림 기호의 수" },
+        { "id": "pictograph_draw", "label": "그림그래프 나타내기" }
+      ],
+      "prompts": ["표에서 가장 많은 자료를 찾는 방법은?", "그림그래프의 그림 기호는 어떻게 읽나요?", "그림그래프를 만들 때 무엇을 먼저 정하나요?"]
+    }
+  ]
+}
