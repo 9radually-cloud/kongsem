@@ -1062,7 +1062,6 @@ function geometryInteractiveSvg(tool) {
   const points = geometryState.drawings[tool] || [];
   const pointString = points.map(([x, y]) => `${x},${y}`).join(' ');
   const handles = geometryEditablePoints(points);
-  const label = (text, x = 160, y = 224) => `<text x="${x}" y="${y}" text-anchor="middle" class="geometry-svg-label">${text}</text>`;
   let artwork = '';
 
   if (tool === 'lines' && points.length >= 2) {
@@ -1085,8 +1084,7 @@ function geometryInteractiveSvg(tool) {
     const start = [vertex[0] + Math.cos(angleOne) * radius, vertex[1] + Math.sin(angleOne) * radius];
     const end = [vertex[0] + Math.cos(angleOne + delta) * radius, vertex[1] + Math.sin(angleOne + delta) * radius];
     const arc = `M${start[0]} ${start[1]}A${radius} ${radius} 0 0 ${delta > 0 ? 1 : 0} ${end[0]} ${end[1]}`;
-    const angleName = degrees < 90 ? '예각' : degrees === 90 ? '직각' : degrees === 180 ? '평각' : '둔각';
-    artwork = `<path d="M${armOne[0]} ${armOne[1]}L${vertex[0]} ${vertex[1]}L${armTwo[0]} ${armTwo[1]}" class="geometry-shape-line"/><path d="${arc}" class="geometry-angle-arc"/>${degrees === 90 ? `<path d="M${vertex[0] + Math.cos(angleOne) * 16} ${vertex[1] + Math.sin(angleOne) * 16}L${vertex[0] + Math.cos(angleOne) * 22 + Math.cos(angleOne + delta) * 6} ${vertex[1] + Math.sin(angleOne) * 22 + Math.sin(angleOne + delta) * 6}L${vertex[0] + Math.cos(angleOne + delta) * 16} ${vertex[1] + Math.sin(angleOne + delta) * 16}" class="geometry-right-angle-mark"/>` : ''}${label(`${angleName} ${degrees}°`, vertex[0], Math.max(24, vertex[1] - 18))}${handles}`;
+    artwork = `<path d="M${armOne[0]} ${armOne[1]}L${vertex[0]} ${vertex[1]}L${armTwo[0]} ${armTwo[1]}" class="geometry-shape-line"/><path d="${arc}" class="geometry-angle-arc"/>${degrees === 90 ? `<path d="M${vertex[0] + Math.cos(angleOne) * 16} ${vertex[1] + Math.sin(angleOne) * 16}L${vertex[0] + Math.cos(angleOne) * 22 + Math.cos(angleOne + delta) * 6} ${vertex[1] + Math.sin(angleOne) * 22 + Math.sin(angleOne + delta) * 6}L${vertex[0] + Math.cos(angleOne + delta) * 16} ${vertex[1] + Math.sin(angleOne + delta) * 16}" class="geometry-right-angle-mark"/>` : ''}${handles}`;
   } else if (tool === 'angles' && points.length === 2) {
     artwork = `<path d="M${points[0][0]} ${points[0][1]}L${points[1][0]} ${points[1][1]}" class="geometry-shape-line"/>${handles}`;
   } else if (['triangles', 'quadrilaterals', 'polygon', 'symmetry'].includes(tool) && points.length >= 3) {
@@ -1097,16 +1095,13 @@ function geometryInteractiveSvg(tool) {
   } else if (tool === 'congruence' && points.length >= 3) {
     const shifted = points.map(([x, y]) => `${x + 145},${y}`).join(' ');
     const shape = geometryState.drawingComplete ? `<polygon points="${pointString}" class="geometry-congruence-first"/><polygon points="${shifted}" class="geometry-congruence-second"/>` : `<polyline points="${pointString}" class="geometry-congruence-first geometry-editable-line"/><polyline points="${shifted}" class="geometry-congruence-second geometry-editable-line"/>`;
-    artwork = `${shape}${handles}${label('도형 1', 85, 230)}${label('도형 2', 230, 230)}`;
+    artwork = `${shape}${handles}`;
   } else if (['circle', 'circleArea'].includes(tool) && points.length >= 2) {
     const [[cx, cy], [rx, ry]] = points;
     const radius = Math.hypot(rx - cx, ry - cy);
-    const unitRadius = Math.round(radius / 10 * 10) / 10;
-    artwork = `<circle cx="${cx}" cy="${cy}" r="${radius}" fill="#f6e9c8" class="geometry-editable-circle"/><path d="M${cx} ${cy}L${rx} ${ry}" class="geometry-radius-line"/><path d="M${cx - (rx - cx)} ${cy - (ry - cy)}L${rx} ${ry}" class="geometry-diameter-line"/><circle cx="${cx}" cy="${cy}" r="4" class="geometry-center-dot"/>${label('중심', cx, cy + 18)}${label(`${unitRadius}칸`, (cx + rx) / 2, (cy + ry) / 2 - 8)}${handles}`;
+    artwork = `<circle cx="${cx}" cy="${cy}" r="${radius}" fill="#f6e9c8" class="geometry-editable-circle"/><path d="M${cx} ${cy}L${rx} ${ry}" class="geometry-radius-line"/><path d="M${cx - (rx - cx)} ${cy - (ry - cy)}L${rx} ${ry}" class="geometry-diameter-line"/><circle cx="${cx}" cy="${cy}" r="4" class="geometry-center-dot"/>${handles}`;
   }
 
-  if (!points.length) artwork = label(tool === 'circle' || tool === 'circleArea' ? '먼저 중심을 눌러요' : '그림판을 눌러 점을 놓아요');
-  else if ((tool === 'lines' && points.length < 2) || (tool === 'angles' && points.length < 3) || (['triangles', 'quadrilaterals', 'polygon', 'symmetry', 'congruence'].includes(tool) && points.length < 3) || (['circle', 'circleArea'].includes(tool) && points.length < 2)) artwork += label(tool === 'circle' || tool === 'circleArea' ? '다음에 원 위를 눌러 크기를 정해요' : '그림판을 눌러 다음 점을 놓아요', 160, 224);
   if (points.length && !handles) artwork += geometryEditablePoints(points);
   if (points.length && !(tool === 'lines' && points.length >= 2) && !(tool === 'angles' && points.length >= 3) && !(['triangles', 'quadrilaterals', 'polygon', 'symmetry', 'congruence'].includes(tool) && points.length >= 3) && !(['circle', 'circleArea'].includes(tool) && points.length >= 2)) artwork += geometryEditablePoints(points);
   return `<svg class="geometry-svg geometry-interactive-svg" viewBox="0 0 320 252" role="img" aria-label="점을 눌러 놓고 동그란 점을 끌어서 도형을 직접 그려요">${artwork}</svg>`;
