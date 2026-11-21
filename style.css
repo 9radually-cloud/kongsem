@@ -1193,6 +1193,12 @@ button:focus-visible, a:focus-visible, textarea:focus-visible { outline-color: v
 .geometry-angle-arc { fill: none; stroke: #d47757; stroke-width: 3; }
 .geometry-right-angle-mark { fill: none; stroke: #d47757; stroke-width: 3; }
 .geometry-side-mark { fill: none; stroke: #718b5f; stroke-width: 4; stroke-linecap: round; }
+.geometry-point-handle { fill: #fff; stroke: #b44d52; stroke-width: 3; cursor: grab; pointer-events: all; touch-action: none; }
+.geometry-point-handle:active { fill: #f8e9e8; cursor: grabbing; }
+.geometry-editable-shape { stroke: #536b99; stroke-width: 4; stroke-linejoin: round; pointer-events: none; }
+.geometry-editable-line { fill: none; stroke: #536b99; stroke-width: 4; stroke-linecap: round; stroke-linejoin: round; pointer-events: none; }
+.geometry-editable-circle { stroke: #536b99; stroke-width: 4; pointer-events: none; }
+.geometry-interactive-svg { touch-action: none; cursor: crosshair; user-select: none; }
 .geometry-congruence-first { fill: #dce9ce; stroke: #536b99; stroke-width: 4; stroke-linejoin: round; }
 .geometry-congruence-second { fill: #f2e0b9; stroke: #b44d52; stroke-width: 4; stroke-linejoin: round; }
 .geometry-cube-left { fill: #c4d7b5; stroke: #617c56; stroke-width: 1.5; }
@@ -1218,6 +1224,9 @@ button:focus-visible, a:focus-visible, textarea:focus-visible { outline-color: v
 .geometry-control input[type="range"] { width: 100%; min-height: 30px; accent-color: #617d54; }
 .geometry-control select { width: 100%; min-height: 45px; padding: 0 10px; border: 1px solid #ccd5e4; border-radius: 10px; background: #fff; color: #344768; font: inherit; }
 .geometry-control-hint { margin: -5px 0 0; color: #68768c; font-size: 12px; line-height: 1.5; }
+.geometry-draw-actions { display: grid; gap: 7px; }
+.geometry-draw-actions button { padding: 8px 12px; }
+.geometry-draw-actions button:disabled { opacity: .45; cursor: not-allowed; }
 .geometry-secondary-button { min-height: 44px; border: 1px solid #ccd5e4; border-radius: 10px; background: #f3f5fa; color: #435579; font: inherit; font-size: 13px; cursor: pointer; }
 .geometry-formula { margin: 0; padding: 10px; border-radius: 9px; background: #edf3e7; color: #466548; font-size: 14px; font-weight: 700; text-align: center; }
 .geometry-view-buttons button { flex: 1; min-width: 52px; padding: 6px 8px; }
